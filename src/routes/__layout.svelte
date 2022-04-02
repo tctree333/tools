@@ -4,11 +4,11 @@
 
 <header class="border-b-2">
 	<nav class="flex max-w-7xl mx-auto px-8 py-4">
-		<a class="font-bold text-4xl" href="/">Tools</a>
+		<a class="font-medium text-3xl" href="/">Tools</a>
 	</nav>
 </header>
 <div class="flex-1">
-	<main class="max-w-4xl mx-auto px-8 mt-8 mb-20 text-xl prose">
+	<main class="max-w-4xl mx-auto px-8 mt-8 mb-20 prose prose-stone sm:prose-lg md:prose-xl">
 		<slot />
 	</main>
 </div>

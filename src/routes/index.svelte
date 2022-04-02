@@ -25,6 +25,12 @@
 
 <h1>Tomi's Tools</h1>
 <p>A collection of assorted utilites that may or may not be useful at any given moment.</p>
+<p>
+	I've decided not to add encoding/decoding/etc. utilities since <a
+		href="https://gchq.github.io/CyberChef/">CyberChef</a
+	> can do a better job than I could ever. These utilites are either simple enough to collect together,
+	or something I haven't found anywhere else.
+</p>
 <h2>Utilities:</h2>
 <ul>
 	{#each tools as tool}

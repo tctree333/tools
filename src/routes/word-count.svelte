@@ -1,6 +1,6 @@
 <script lang="ts">
 	let value = '';
-	let boundaries = '\\s—–/,';
+	let boundaries = '\\s';
 
 	let boundaryRegex: RegExp;
 	$: {
@@ -8,7 +8,7 @@
 			boundaryRegex = new RegExp(`[${boundaries}]+`);
 		} catch (e) {}
 	}
-	$: words = value ? value.split(boundaryRegex).length : 0;
+	$: words = value ? value.split(boundaryRegex).filter((w) => w !== '').length : 0;
 	$: characters = value ? value.length : 0;
 </script>
 

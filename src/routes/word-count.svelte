@@ -1,4 +1,14 @@
+<script context="module" lang="ts">
+	export const metadata = {
+		title: 'Word Count',
+		description:
+			'Count the number of words and characters within text, with configurable word boundaries!'
+	};
+</script>
+
 <script lang="ts">
+	import Head from '$lib/components/Head.svelte';
+
 	let value = '';
 	let boundaries = '\\s';
 
@@ -11,6 +21,8 @@
 	$: words = value ? value.split(boundaryRegex).filter((w) => w !== '').length : 0;
 	$: characters = value ? value.length : 0;
 </script>
+
+<Head title={metadata.title} description={metadata.description} />
 
 <h1>Word Count</h1>
 <textarea bind:value class="block w-full mb-4" rows="14" />

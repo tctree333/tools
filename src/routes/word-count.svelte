@@ -12,10 +12,11 @@
 	$: characters = value ? value.length : 0;
 </script>
 
-<textarea bind:value />
+<h1>Word Count</h1>
+<textarea bind:value class="block w-full mb-4" rows="14" />
 <label>
 	Word boundaries:
 	<input type="text" bind:value={boundaries} />
 </label>
-<p>Words: {words}</p>
-<p>Characters: {characters}</p>
+<p class="mb-2"><span class="font-medium">Words:</span> {words}</p>
+<p class="mt-0"><span class="font-medium">Characters:</span> {characters}</p>

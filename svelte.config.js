@@ -12,7 +12,8 @@ const config = {
 	kit: {
 		adapter: adapter({
 			split: false
-		})
+		}),
+		trailingSlash: 'always'
 	}
 };
 

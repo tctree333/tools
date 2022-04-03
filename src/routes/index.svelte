@@ -20,15 +20,22 @@
 </script>
 
 <script lang="ts">
+	import Head from '$lib/components/Head.svelte';
+
 	export let tools: [{ path: string; title: string; description: string }];
 </script>
+
+<Head
+	title="Tools"
+	description="A collection of assorted utilites that may or may not be useful at any given moment."
+/>
 
 <h1>Tomi's Tools</h1>
 <p>A collection of assorted utilites that may or may not be useful at any given moment.</p>
 <p>
 	I've decided not to add encoding/decoding/etc. utilities since <a
 		href="https://gchq.github.io/CyberChef/">CyberChef</a
-	> can do a better job than I could ever. These utilites are either simple enough to collect together,
+	> can do a better job than I could ever. The utilites here are either simple enough to collect together,
 	or something I haven't found anywhere else.
 </p>
 <h2>Utilities:</h2>

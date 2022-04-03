@@ -30,5 +30,5 @@
 	Word boundaries:
 	<input type="text" bind:value={boundaries} />
 </label>
-<p class="mb-2"><span class="font-medium">Words:</span> {words}</p>
-<p class="mt-0"><span class="font-medium">Characters:</span> {characters}</p>
+<p class="!mb-0"><span class="font-medium">Words:</span> {words}</p>
+<p class="!mt-0"><span class="font-medium">Characters:</span> {characters}</p>

@@ -8,7 +8,7 @@
 	</nav>
 </header>
 <div class="flex-1">
-	<main class="max-w-4xl mx-auto px-8 mt-8 mb-20 prose prose-stone sm:prose-lg md:prose-xl">
+	<main class="max-w-5xl mx-auto px-8 mt-8 mb-20 prose prose-stone sm:prose-lg md:prose-xl">
 		<slot />
 	</main>
 </div>

@@ -3,8 +3,10 @@
 </script>
 
 <header class="border-b-2">
-	<nav class="flex max-w-7xl mx-auto px-8 py-4">
-		<a class="font-medium text-3xl" href="/">Tools</a>
+	<nav class="max-w-7xl mx-auto px-8 py-4">
+		<a class="font-medium text-3xl flex flex-row items-center" href="/"
+			><img src="/logo.svg" alt="logo" class="h-10 w-10 inline mr-2" />Tools</a
+		>
 	</nav>
 </header>
 <div class="flex-1">

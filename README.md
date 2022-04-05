@@ -1,20 +1,8 @@
-# create-svelte
+# Tomi's Tools
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
+A collection of assorted utilites that may or may not be useful at any given moment. Available [live on the web](https://tools.tomichen.com/).
 
-## Creating a project
-
-If you're seeing this, you've probably already done this step. Congrats!
-
-```bash
-# create a new project in the current directory
-npm init svelte@next
-
-# create a new project in my-app
-npm init svelte@next my-app
-```
-
-> Note: the `@next` is temporary
+I've always wanted a simple utility site where I can throw up some simple custom tools when I need them. The utilites here are either simple enough to collect together, or something custom I haven't found anywhere else. Who knows, maybe they might be useful to you!
 
 ## Developing
 
@@ -36,5 +24,3 @@ npm run build
 ```
 
 You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.

@@ -36,7 +36,7 @@
 	I've decided not to add encoding/decoding/etc. utilities since <a
 		href="https://gchq.github.io/CyberChef/">CyberChef</a
 	> can do a better job than I could ever. The utilites here are either simple enough to collect together,
-	or something I haven't found anywhere else.
+	or something custom I haven't found anywhere else. Who knows, maybe they might be useful to you!
 </p>
 <h2>Utilities:</h2>
 <ul>

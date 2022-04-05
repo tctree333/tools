@@ -39,8 +39,22 @@
 	or something custom I haven't found anywhere else. Who knows, maybe they might be useful to you!
 </p>
 <h2>Utilities:</h2>
-<ul>
-	{#each tools as tool}
-		<li><a href={tool.path}>{tool.title}</a> - {tool.description}</li>
-	{/each}
-</ul>
+<div class="not-prose">
+	<ul class="flex flex-row flex-wrap gap-4">
+		{#each tools as tool}
+			<li class="flex-1">
+				<a class="rounded-md bg-stone-100 px-4 py-3 block leading-relaxed h-full" href={tool.path}>
+					<span class="font-medium sm:text-lg md:text-xl">{tool.title}</span>
+					<br />
+					<span class="md:text-lg text-stone-600">{tool.description}</span>
+				</a>
+			</li>
+		{/each}
+	</ul>
+</div>
+
+<style>
+	li {
+		min-width: min(320px, 50vw);
+	}
+</style>

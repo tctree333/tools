@@ -103,10 +103,10 @@
 	}}
 	on:mousemove={(e) => {
 		if (hueMouseDown) {
-			setHueFromMousePos(e.clientX);
+			setHueFromMousePos(e.pageX);
 		}
 		if (pickerMouseDown) {
-			setColorFromMousePos(e.clientX, e.clientY);
+			setColorFromMousePos(e.pageX, e.pageY);
 		}
 	}}
 	on:keydown={(e) => {
@@ -148,7 +148,7 @@
 		bind:this={colorPicker}
 		on:mousedown={() => (pickerMouseDown = true)}
 		on:click={(e) => {
-			setColorFromMousePos(e.clientX, e.clientY);
+			setColorFromMousePos(e.pageX, e.pageY);
 		}}
 	>
 		{#if contrastRatio > 0}
@@ -167,7 +167,7 @@
 		bind:this={huePicker}
 		on:mousedown={() => (hueMouseDown = true)}
 		on:click={(e) => {
-			setHueFromMousePos(e.clientX);
+			setHueFromMousePos(e.pageX);
 		}}
 	>
 		<div

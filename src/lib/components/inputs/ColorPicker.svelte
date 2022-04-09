@@ -110,31 +110,33 @@
 		}
 	}}
 	on:keydown={(e) => {
+		if (
+			(hueFocus || pickerFocus) &&
+			['ArrowRight', 'ArrowLeft', 'ArrowUp', 'ArrowDown'].includes(e.key)
+		) {
+			e.preventDefault();
+			e.stopPropagation();
+		}
+
 		if (hueFocus) {
 			if (e.key === 'ArrowRight') {
-				e.preventDefault();
 				hue = Math.min(Math.max(0, hue + 1), 360);
 			}
 			if (e.key === 'ArrowLeft') {
-				e.preventDefault();
 				hue = Math.min(Math.max(0, hue - 1), 360);
 			}
 		}
 		if (pickerFocus) {
 			if (e.key === 'ArrowRight') {
-				e.preventDefault();
 				saturation = Math.min(Math.max(0, saturation + 1), 100);
 			}
 			if (e.key === 'ArrowLeft') {
-				e.preventDefault();
 				saturation = Math.min(Math.max(0, saturation - 1), 100);
 			}
 			if (e.key === 'ArrowUp') {
-				e.preventDefault();
 				brightness = Math.min(Math.max(0, brightness + 1), 100);
 			}
 			if (e.key === 'ArrowDown') {
-				e.preventDefault();
 				brightness = Math.min(Math.max(0, brightness - 1), 100);
 			}
 		}

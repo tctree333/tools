@@ -1,8 +1,7 @@
 <script context="module" lang="ts">
 	export const metadata = {
 		title: 'Word Count',
-		description:
-			'Count the number of words and characters within text, with configurable word boundaries!'
+		description: 'Count the number of words and characters.'
 	};
 </script>
 

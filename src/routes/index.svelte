@@ -40,7 +40,7 @@
 </p>
 <h2>Utilities:</h2>
 <div class="not-prose">
-	<ul class="flex flex-row flex-wrap gap-4">
+	<ul class="grid gap-4">
 		{#each tools as tool}
 			<li class="flex-1">
 				<a class="rounded-md bg-stone-100 px-4 py-3 block leading-relaxed h-full" href={tool.path}>
@@ -54,7 +54,7 @@
 </div>
 
 <style>
-	li {
-		min-width: min(320px, 50vw);
+	ul {
+		grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));
 	}
 </style>

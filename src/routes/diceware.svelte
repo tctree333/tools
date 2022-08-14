@@ -1,7 +1,7 @@
 <script context="module" lang="ts">
 	export const metadata = {
-		title: 'Dice Method Passphrases',
-		description: "Generate a passphrase using EFF's dice method."
+		title: 'Diceware Passphrases',
+		description: 'Generate a diceware passphrase.'
 	};
 </script>
 
@@ -53,7 +53,7 @@
 
 <Head title={metadata.title} description={metadata.description} />
 
-<h1>Dice Method Passphrases</h1>
+<h1>Diceware Passphrases</h1>
 
 <p class="text-4xl text-center w-full border-2 p-14">{generated}</p>
 
@@ -79,8 +79,11 @@
 </div>
 
 <p>
-	This passphrase generator uses the <a href="https://www.eff.org/dice">EFF Dice Method</a> to generate
-	secure passphrases that are easier to remember. A 6 word passphrase is generally reccommended.
+	This passphrase generator uses the <a href="https://en.wikipedia.org/wiki/Diceware"
+		>diceware method</a
+	>
+	along with <a href="https://www.eff.org/dice">EFF's wordlists</a> to generate secure passphrases that
+	are easier to remember. A 6 word passphrase is generally reccommended.
 </p>
 <p>
 	The "Long Wordlist" contains 7,776 words, while the short wordlists contain 1,296 words each.

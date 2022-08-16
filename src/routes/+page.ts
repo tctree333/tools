@@ -9,7 +9,7 @@ export const load: PageLoad = async () => {
 				const { metadata } = (await module()) as {
 					metadata: { title: string; description: string };
 				};
-				return { path: `/${filename.slice(2, -7)}/`, ...metadata };
+				return { path: `/${filename.slice(2, -'/+page.svelte'.length)}/`, ...metadata };
 			})
 	);
 	return {

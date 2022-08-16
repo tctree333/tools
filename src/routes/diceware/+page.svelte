@@ -1,8 +1,10 @@
 <script context="module" lang="ts">
-	export const metadata = {
-		title: 'Diceware Passphrases',
-		description: 'Generate a diceware passphrase.'
-	};
+	throw new Error("@migration task: Check code was safely removed (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292722)");
+
+	// export const metadata = {
+	// 	title: 'Diceware Passphrases',
+	// 	description: 'Generate a diceware passphrase.'
+	// };
 </script>
 
 <script lang="ts">

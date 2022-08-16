@@ -1,25 +1,6 @@
-<script context="module" lang="ts">
-	import type { Load } from '@sveltejs/kit';
-
-	export const load: Load = async () => {
-		const modules = import.meta.glob('./*.svelte');
-		const tools = await Promise.all(
-			Object.entries(modules)
-				.filter(([filename, _]) => !filename.startsWith('./_'))
-				.map(async ([filename, module]) => {
-					const { metadata } = await module();
-					return { path: `/${filename.slice(2, -7)}/`, ...metadata };
-				})
-		);
-		return {
-			props: {
-				tools
-			}
-		};
-	};
-</script>
-
 <script lang="ts">
+	throw new Error("@migration task: Add data prop (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292707)");
+
 	import Head from '$lib/components/Head.svelte';
 
 	export let tools: [{ path: string; title: string; description: string }];

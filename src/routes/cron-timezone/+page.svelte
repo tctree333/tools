@@ -1,8 +1,10 @@
 <script context="module" lang="ts">
-	export const metadata = {
-		title: 'Cron Timezone Shifter',
-		description: 'Convert crontab syntax from one timezone to another.'
-	};
+	throw new Error("@migration task: Check code was safely removed (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292722)");
+
+	// export const metadata = {
+	// 	title: 'Cron Timezone Shifter',
+	// 	description: 'Convert crontab syntax from one timezone to another.'
+	// };
 </script>
 
 <script lang="ts">

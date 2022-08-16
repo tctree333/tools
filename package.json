@@ -2,6 +2,7 @@
 	"name": "utilities",
 	"version": "0.0.1",
 	"scripts": {
+		"clean": "rm -rf build .netlify",
 		"dev": "vite dev",
 		"build": "vite build",
 		"package": "svelte-kit package",

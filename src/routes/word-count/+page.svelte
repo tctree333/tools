@@ -1,10 +1,8 @@
 <script context="module" lang="ts">
-	throw new Error("@migration task: Check code was safely removed (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292722)");
-
-	// export const metadata = {
-	// 	title: 'Word Count',
-	// 	description: 'Count the number of words and characters.'
-	// };
+	export const metadata = {
+		title: 'Word Count',
+		description: 'Count the number of words and characters.'
+	};
 </script>
 
 <script lang="ts">

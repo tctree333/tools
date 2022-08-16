@@ -1,9 +1,9 @@
 <script lang="ts">
-	throw new Error("@migration task: Add data prop (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292707)");
-
 	import Head from '$lib/components/Head.svelte';
+	import type { PageData } from './$types';
 
-	export let tools: [{ path: string; title: string; description: string }];
+	export let data: PageData;
+	$: ({ tools } = data);
 </script>
 
 <Head

@@ -42,6 +42,15 @@
 
 	let hueMouseDown = false;
 	let pickerMouseDown = false;
+	$: {
+		if (browser) {
+			if (pickerMouseDown || hueMouseDown) {
+				document.body.classList.add('noselect', 'overflow-y-hidden', 'h-full');
+			} else {
+				document.body.classList.remove('noselect', 'overflow-y-hidden', 'h-full');
+			}
+		}
+	}
 
 	let hueFocus = false;
 	let pickerFocus = false;
@@ -54,15 +63,6 @@
 	// 8 is half of 16, the content width of the picker circle
 	$: huePickerOffset = huePicker?.getBoundingClientRect()?.x + 8 ?? 0;
 	$: huePickerX = (hue / 360) * huePickerWidth;
-	$: {
-		if (browser) {
-			if (hueMouseDown) {
-				document.body.classList.add('noselect');
-			} else {
-				document.body.classList.remove('noselect');
-			}
-		}
-	}
 	function setHueFromMousePos(x: number) {
 		hue = Math.round(
 			(Math.min(Math.max(0, x - huePickerOffset), huePickerWidth) / huePickerWidth) * 360
@@ -75,15 +75,6 @@
 	$: colorPickerOffsetY = colorPicker?.getBoundingClientRect()?.y + 8 ?? 0;
 	$: colorPickerX = (saturation / 100) * colorPickerWidth;
 	$: colorPickerY = ((100 - brightness) / 100) * colorPickerHeight;
-	$: {
-		if (browser) {
-			if (pickerMouseDown) {
-				document.body.classList.add('noselect');
-			} else {
-				document.body.classList.remove('noselect');
-			}
-		}
-	}
 	function setColorFromMousePos(x: number, y: number) {
 		saturation = Math.round(
 			(Math.min(Math.max(0, x - colorPickerOffsetX), colorPickerWidth) / colorPickerWidth) * 100
@@ -97,11 +88,11 @@
 </script>
 
 <svelte:window
-	on:mouseup={() => {
+	on:pointerup|preventDefault={() => {
 		hueMouseDown = false;
 		pickerMouseDown = false;
 	}}
-	on:mousemove={(e) => {
+	on:pointermove|preventDefault={(e) => {
 		if (hueMouseDown) {
 			setHueFromMousePos(e.pageX);
 		}
@@ -148,7 +139,7 @@
 		class="w-full aspect-square mb-4 color-picker rounded-lg relative"
 		style="--hue: {hue};"
 		bind:this={colorPicker}
-		on:mousedown={() => (pickerMouseDown = true)}
+		on:pointerdown|preventDefault={() => (pickerMouseDown = true)}
 		on:click={(e) => {
 			setColorFromMousePos(e.pageX, e.pageY);
 		}}
@@ -167,7 +158,7 @@
 	<div
 		class="w-full h-4 relative hue-picker rounded-full"
 		bind:this={huePicker}
-		on:mousedown={() => (hueMouseDown = true)}
+		on:pointerdown|preventDefault={() => (hueMouseDown = true)}
 		on:click={(e) => {
 			setHueFromMousePos(e.pageX);
 		}}

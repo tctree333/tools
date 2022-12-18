@@ -87,7 +87,9 @@
 	class="mb-8 px-4 py-0.5 border-2 border-stone-400">Off</button
 >
 
-<ColorPicker class="w-96 mb-8" bind:color />
+<div class="not-prose flex">
+	<ColorPicker class="w-96 mb-8" bind:color />
+</div>
 
 <label>
 	Brightness: <input

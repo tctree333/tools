@@ -68,7 +68,8 @@
 				update(browser, ipAddress, colorMode);
 			}
 		}}
-		><option value="rainbow" selected>Rainbow</option><option value="manual">Manual Color</option>
+		><option value="rainbow" selected>Rainbow</option><option value="random" selected>Random</option
+		><option value="manual">Manual Color</option>
 	</select>
 </label>
 

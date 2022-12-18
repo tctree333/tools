@@ -8,7 +8,7 @@
 </script>
 
 <script lang="ts">
-	import { browser } from '$app/env';
+	import { browser } from '$app/environment';
 	import ColorPickerContrastLine, { HSBToRGB } from './ColorPickerContrastLine.svelte';
 
 	let className = '';

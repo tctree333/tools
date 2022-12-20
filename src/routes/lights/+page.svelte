@@ -22,7 +22,7 @@
 	};
 	let setColorFromHex: (hex: string) => void;
 
-	let colorMode: 'rainbow' | 'pureRandom' | 'randomAround' | 'breathe' | 'manual';
+	let colorMode: string;
 	let brightness: number;
 
 	function update(command: string) {
@@ -89,7 +89,7 @@
 	Color Mode:
 	<select class="border-2 border-stone-400" bind:value={colorMode}
 		><option value="rainbow" selected>Rainbow</option><option value="pureRandom">Pure Random</option
-		><option value="randomAround">Random Around</option><option value="manual">Solid Color</option>
+		><option value="randomAround">Random Around</option><option value="breathe">Breathe Color</option><option value="manual">Solid Color</option>
 	</select>
 </label>
 

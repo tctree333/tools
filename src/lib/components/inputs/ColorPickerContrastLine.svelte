@@ -23,6 +23,25 @@
 		return [255 * f(5), 255 * f(3), 255 * f(1)];
 	};
 
+	export const RGBToHSB = (r: number, g: number, b: number) => {
+		// convert RGB to HSB
+		// hue is in [0, 360], saturation and brightness in [0, 100]
+		const min = Math.min(r, g, b);
+		const max = Math.max(r, g, b);
+		const delta = max - min;
+		const brightness = (max / 255) * 100;
+		const saturation = max === 0 ? 0 : (delta / max) * 100;
+		const hue =
+			max === min
+				? 0
+				: r === max
+				? ((g - b) / delta) * 60
+				: g === max
+				? 120 + ((b - r) / delta) * 60
+				: 240 + ((r - g) / delta) * 60;
+		return [hue, saturation, brightness];
+	};
+
 	export const contrastBetween = (
 		first: { red: number; green: number; blue: number },
 		second: { red: number; green: number; blue: number }

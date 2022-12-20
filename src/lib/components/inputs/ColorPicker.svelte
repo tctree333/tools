@@ -9,7 +9,7 @@
 
 <script lang="ts">
 	import { browser } from '$app/environment';
-	import ColorPickerContrastLine, { HSBToRGB } from './ColorPickerContrastLine.svelte';
+	import ColorPickerContrastLine, { HSBToRGB, parseHex, RGBToHSB } from './ColorPickerContrastLine.svelte';
 
 	let className = '';
 	export { className as class };
@@ -25,6 +25,11 @@
 	};
 
 	let { hue, saturation, brightness, hex } = color;
+	
+	export const setColorFromHex = (hex: string) => {
+		const {red, green, blue} = parseHex(hex);
+		[hue, saturation, brightness] = RGBToHSB(red, green, blue);
+	}
 
 	$: {
 		color = {

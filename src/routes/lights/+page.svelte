@@ -11,6 +11,7 @@
 
 	import Head from '$lib/components/Head.svelte';
 	import ColorPicker, { type ColorInfo } from '$lib/components/inputs/ColorPicker.svelte';
+	import { onMount } from 'svelte';
 
 	let ipAddress = $page.url.hash.slice(1) || '0.0.0.0';
 	let color: ColorInfo = {
@@ -19,37 +20,53 @@
 		brightness: 100,
 		hex: 'FFFFFF'
 	};
+	let setColorFromHex: (hex: string) => void;
 
-	let colorMode: 'manual' | 'rainbow';
+	let colorMode: 'rainbow' | 'pureRandom' | 'randomAround' | 'breathe' | 'manual';
+	let brightness: number;
 
-	let brightness: number = 25;
+	function update(command: string) {
+		if (browser && loaded) {
+			fetch(`http://${ipAddress}/?${command}`, {
+				mode: 'no-cors'
+			});
+		}
+	}
 
 	let timeout: NodeJS.Timeout;
-	function update(browser: boolean, ipAddress: string, command: string) {
+	function updateColor(hex: string) {
 		if (timeout) {
 			clearTimeout(timeout);
 		}
 		timeout = setTimeout(() => {
-			if (browser) {
-				fetch(`http://${ipAddress}/?${command}`, {
-					mode: 'no-cors'
-				});
-			}
+			update('$' + hex);
+			setTimeout(() => {
+				update(colorMode);
+			}, 100);
 		}, 100);
 	}
-	$: {
-		if (colorMode === 'manual') update(browser, ipAddress, '$' + color.hex);
-	}
 
-	$: {
-		update(
-			browser,
-			ipAddress,
-			`B${Math.round((brightness / 100) * 255)
-				.toString(16)
-				.padStart(2, '0')}`
-		);
-	}
+	let loaded = false;
+	onMount(() => {
+		fetch(`http://${ipAddress}/status`, {
+			mode: 'cors'
+		})
+			.then((res) => res.json())
+			.then((data) => {
+				colorMode = data.mode;
+				brightness = Math.round(100 * (data.brightness / 255));
+				setColorFromHex(data.color.toString(16).padStart(6, '0'));
+				loaded = true;
+			});
+	});
+
+	$: updateColor(color.hex);
+	$: update(colorMode);
+	$: update(
+		`B${Math.round((brightness / 100) * 255)
+			.toString(16)
+			.padStart(2, '0')}`
+	);
 </script>
 
 <Head title={metadata.title} description={metadata.description} />
@@ -58,38 +75,33 @@
 
 <p class="mb-4">IP Address: <code>{ipAddress}</code> (set this using the url hash)</p>
 
-<label class="block mb-4">
+<label class="inline-block mb-4">
 	Color Mode:
-	<select
-		class="border-2 border-stone-400"
-		bind:value={colorMode}
-		on:change={() => {
-			if (colorMode !== 'manual') {
-				update(browser, ipAddress, colorMode);
-			}
-		}}
-		><option value="rainbow" selected>Rainbow</option><option value="random" selected>Random</option
-		><option value="manual">Manual Color</option>
+	<select class="border-2 border-stone-400" bind:value={colorMode}
+		><option value="rainbow" selected>Rainbow</option><option value="pureRandom">Pure Random</option
+		><option value="randomAround">Random Around</option><option value="manual">Solid Color</option>
 	</select>
 </label>
 
+<br />
+
 <button
 	on:click={() => {
-		update(browser, ipAddress, 'on');
+		update('on');
 	}}
 	type="button"
 	class="mb-8 px-4 py-0.5 border-2 border-stone-400">On</button
 >
 <button
 	on:click={() => {
-		update(browser, ipAddress, 'off');
+		update('off');
 	}}
 	type="button"
 	class="mb-8 px-4 py-0.5 border-2 border-stone-400">Off</button
 >
 
 <div class="not-prose flex">
-	<ColorPicker class="w-96 mb-8" bind:color />
+	<ColorPicker class="w-96 mb-8" bind:color bind:setColorFromHex />
 </div>
 
 <label>

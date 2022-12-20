@@ -73,6 +73,16 @@
 
 <h1>Room LED Control</h1>
 
+<details>
+	<summary class="underline cursor-pointer">What's this?</summary>
+	<p>
+		This is the web interface for a project controlling lights over the local network. For more
+		information on this project, check out <a href="https://github.com/tctree333/room-lights"
+			>this GitHub repo</a
+		>.
+	</p>
+</details>
+
 <p class="mb-4">IP Address: <code>{ipAddress}</code> (set this using the url hash)</p>
 
 <label class="inline-block mb-4">

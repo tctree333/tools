@@ -8,4 +8,27 @@
 	body {
 		height: 100%;
 	}
+	body {
+		@apply flex flex-col items-stretch bg-stone-50 dark:bg-stone-800;
+	}
+}
+
+@layer components {
+	[type='text'],
+	[type='email'],
+	[type='url'],
+	[type='password'],
+	[type='number'],
+	[type='date'],
+	[type='datetime-local'],
+	[type='month'],
+	[type='search'],
+	[type='tel'],
+	[type='time'],
+	[type='week'],
+	[multiple],
+	textarea,
+	select {
+		background-color: transparent;
+	}
 }

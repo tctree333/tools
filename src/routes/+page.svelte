@@ -24,10 +24,15 @@
 	<ul class="grid gap-4">
 		{#each tools as tool}
 			<li class="flex-1">
-				<a class="rounded-md bg-stone-100 px-4 py-3 block leading-relaxed h-full" href={tool.path}>
-					<span class="font-medium sm:text-lg md:text-xl">{tool.title}</span>
+				<a
+					class="rounded-md bg-stone-200 px-4 py-3 block leading-relaxed h-full dark:bg-stone-900"
+					href={tool.path}
+				>
+					<span class="font-medium text-stone-900 sm:text-lg md:text-xl dark:text-stone-50"
+						>{tool.title}</span
+					>
 					<br />
-					<span class="md:text-lg text-stone-600">{tool.description}</span>
+					<span class="md:text-lg">{tool.description}</span>
 				</a>
 			</li>
 		{/each}

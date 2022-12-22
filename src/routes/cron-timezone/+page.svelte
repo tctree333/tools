@@ -174,12 +174,12 @@
 </p>
 
 <label class="block mb-4 mt-10">
-	<span class="font-medium text-stone-900">Original Cron:</span>
+	<strong>Original Cron:</strong>
 	<input bind:value={cron} type="text" />
 </label>
 
 <label class="mr-2">
-	<span class="font-medium text-stone-900">Shift by (hours):</span>
+	<strong>Shift by (hours):</strong>
 	<input bind:value={offset} type="number" class="w-20" max="14" min="-14" />
 </label>
 <p class="inline whitespace-nowrap">({readableOffset})</p>

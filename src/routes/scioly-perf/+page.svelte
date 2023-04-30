@@ -81,7 +81,9 @@
 					.filter((s) => s.length > 0);
 
 				const i = interpreters.find((i) => i.name === target.id)?.i;
-				const team = i?.teams.find((t) => t.school === schoolName && t.suffix === teamName);
+				const team = i?.teams.find(
+					(t) => t.school === schoolName && (t.suffix ? t.suffix === teamName : true)
+				);
 
 				if (!people[student]) people[student] = { average: -1, placings: {} };
 				people[student].placings[target.id] = {
@@ -198,7 +200,7 @@
 						updatePeople({ target: document.getElementById(e.target.id.slice(0, -8)) });
 					}
 				}}
-			/>{i.tournament.name}
+			/>{i.tournament.name || name}
 		</label>
 	</h3>
 	<textarea id={name} placeholder="Name,Team,Event 1,Event 2,..." on:change={updatePeople} />

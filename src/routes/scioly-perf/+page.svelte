@@ -155,10 +155,16 @@
 			loadInterpreters();
 		}
 
-		fetch('https://www.duosmium.org/cache/bg-colors.json')
+		fetch('https://www.duosmium.org/cache/tourn-images.json')
 			.then((r) => r.json())
-			.then((data) => {
-				colors = data;
+			.then((images) => {
+				fetch('https://www.duosmium.org/cache/bg-colors.json')
+					.then((r) => r.json())
+					.then((data) => {
+						Object.entries(images).forEach(([id, image]) => {
+							colors[id] = data[image as string] as string;
+						});
+					});
 			});
 	});
 </script>

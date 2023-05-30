@@ -15,6 +15,8 @@
 	let tournamentString = '';
 	let interpreters: { i: Interpreter; name: string }[] = [];
 
+	let displayTrials = true;
+
 	let people: {
 		[name: string]: {
 			average: number;
@@ -88,10 +90,11 @@
 				if (!people[student]) people[student] = { average: -1, placings: {} };
 				people[student].placings[target.id] = {
 					team: teamName,
-					events: events.map((eventName) => [
-						eventName,
-						team.placingFor(i.events.find((e) => e.name === eventName))?.isolatedPoints
-					])
+					events: events.flatMap((eventName) => {
+						let event = i.events.find((e) => e.name === eventName);
+						if (!displayTrials && (event?.trial || event?.trialed)) return [];
+						return [[eventName, team.placingFor(event)?.isolatedPoints]];
+					})
 				};
 			});
 
@@ -213,8 +216,22 @@
 {/each}
 
 <h2>Step 3: Results</h2>
+<label class="block mb-4">
+	<input
+		type="checkbox"
+		bind:checked={displayTrials}
+		on:change={() => {
+			interpreters.forEach(({ name }) => {
+				if (!document.getElementById(name + 'checkbox')?.checked) return;
+				const target = document.getElementById(name);
+				updatePeople({ target });
+			});
+		}}
+	/>
+	Display trial(ed) events
+</label>
 <button
-	class="px-4 py-0.5 border-2 border-stone-400 mb-4"
+	class="px-4 py-0.5 border-2 border-stone-400 mb-4 block"
 	on:click={() => (sort = sort === 'name' ? 'avg' : 'name')}
 	>Sort by {sort === 'name' ? 'average' : 'name'}</button
 >

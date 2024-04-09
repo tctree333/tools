@@ -84,28 +84,165 @@
 		positions.set(motor, parseFloat(newPos));
 		positions = positions;
 	};
+	const set = async (motor: string, angle: number) => {
+		const newPos = await send(`${motor}s${angle}`);
+
+		if (isNaN(parseFloat(newPos))) return;
+
+		positions.set(motor, parseFloat(newPos));
+		positions = positions;
+	};
 
 	const handleKeypress = async (event: KeyboardEvent) => {
 		if (!port) return;
 
 		const key = event.key;
-		if (key === 'q') {
-			move('s', 5);
-		} else if (key === 'a') {
-			move('s', -5);
-		} else if (key === 'w') {
-			move('0', 5);
+		// if (key === 'q') {
+		// 	move('s', 5);
+		// } else if (key === 'a') {
+		// 	move('s', -5);
+		// } else if (key === 'w') {
+		// 	move('0', 5);
+		// } else if (key === 's') {
+		// 	move('0', -5);
+		// } else if (key === 'e') {
+		// 	move('1', 5);
+		// } else if (key === 'd') {
+		// 	move('1', -5);
+		// } else if (key === 'r') {
+		// 	move('2', 5);
+		// } else if (key === 'f') {
+		// 	move('2', -5);
+		// }
+
+		if (key === 'w') {
+			target[1] += 1;
 		} else if (key === 's') {
-			move('0', -5);
-		} else if (key === 'e') {
-			move('1', 5);
+			target[1] -= 1;
 		} else if (key === 'd') {
-			move('1', -5);
-		} else if (key === 'r') {
-			move('2', 5);
-		} else if (key === 'f') {
-			move('2', -5);
+			target[0] += 1;
+		} else if (key === 'a') {
+			target[0] -= 1;
+		} else if (key === 'e') {
+			target[2] += 1;
+		} else if (key === 'q') {
+			target[2] -= 1;
 		}
+		target = target;
+	};
+
+	// attempt at inverse kinematics based on FABRIK
+	// References:
+	// http://www.andreasaristidou.com/FABRIK.html
+	// https://sean.cm/a/fabrik-algorithm-2d/
+
+	type Point3D = [number, number, number];
+	type Point2D = [number, number];
+
+	let target: Point3D = [0, 10, 10];
+	let jointAngles = [90, 90];
+	const armLength = 10;
+	$: jointAngles = moveArm(target, jointAngles);
+
+	const pythag = (x: number, y: number): number => {
+		return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+	};
+
+	const STEPS_PER_REV = 200;
+	const extractTargetPos = (target: Point3D): [number, Point2D] => {
+		const radians = Math.atan2(target[1], target[0]);
+		const radius = pythag(target[0], target[1]);
+		return [radians * (STEPS_PER_REV / 2 / Math.PI), [radius, target[2]]];
+	};
+
+	const extractPlaneCoordinates = (jointAngles: number[]): Point2D[] => {
+		return [90].concat(...jointAngles).reduce((acc, angle, i, arr) => {
+			if (i === 0) {
+				acc.push([0, 0]);
+			} else {
+				const absoluteAngle = angle + arr[i - 1] - 90;
+				acc.push([
+					acc[acc.length - 1][0] + Math.cos((absoluteAngle * Math.PI) / 180) * armLength,
+					acc[acc.length - 1][1] + Math.sin((absoluteAngle * Math.PI) / 180) * armLength
+				]);
+			}
+			return acc;
+		}, [] as Point2D[]);
+	};
+
+	const fabrik = (target: Point2D, jointCoords: Point2D[]) => {
+		const reach = (tail: Point2D, target: Point2D): Point2D => {
+			const sdX = tail[0] - target[0];
+			const sdY = tail[1] - target[1];
+			const stretchedDist = pythag(sdX, sdY);
+
+			const scale = armLength / stretchedDist;
+			return [target[0] + scale * sdX, target[1] + scale * sdY];
+		};
+
+		const forwardReach = jointCoords.reverse().reduce(
+			(acc, _, i, arr) => {
+				acc.newJoints.unshift(acc.target);
+				if (i !== arr.length - 1) {
+					acc.target = reach(arr[i + 1], acc.target);
+				}
+				return acc;
+			},
+			{ target, newJoints: [] as Point2D[] }
+		);
+
+		const backwardReach = forwardReach.newJoints.reduce(
+			(acc, _, i, arr) => {
+				acc.newJoints.push(acc.target);
+				if (i !== arr.length - 1) {
+					acc.target = reach(arr[i + 1], acc.target);
+				}
+				return acc;
+			},
+			{ target: [0, 0] as Point2D, newJoints: [] as Point2D[] }
+		).newJoints;
+
+		return backwardReach;
+	};
+
+	const computeJointAngles = (jointCoords: Point2D[]): number[] => {
+		return jointCoords
+			.reduce(
+				(acc, joint, i, arr) => {
+					if (i === 0) return acc;
+					const prevPoint = arr[i - 1];
+					const dX = joint[0] - prevPoint[0];
+					const dY = joint[1] - prevPoint[1];
+					const absoluteAngle = (Math.atan2(dY, dX) * 180) / Math.PI;
+					const relativeAngle = absoluteAngle + 90 - acc[acc.length - 1];
+					acc.push(relativeAngle);
+					return acc;
+				},
+				[90]
+			)
+			.slice(1);
+	};
+
+	const moveArm = (target: Point3D, jointAngles: number[]) => {
+		const [targetAngle, targetCoord] = extractTargetPos(target);
+		const jointCoords = extractPlaneCoordinates(jointAngles);
+		const newJointCoords = fabrik(targetCoord, jointCoords);
+		const newJointAngles = computeJointAngles(newJointCoords);
+		console.log('DEBUG', 'moveArm', {
+			target,
+			jointAngles,
+			targetAngle,
+			targetCoord,
+			jointCoords,
+			newJointCoords,
+			newJointAngles
+		});
+
+		newJointAngles.forEach((angle, i) => {
+			set(i.toString(), angle);
+		});
+
+		return newJointAngles;
 	};
 </script>
 
@@ -121,24 +258,30 @@
 	>
 	<button on:click={reset} type="button" class="px-4 py-0.5 border-2 border-stone-400">Reset</button
 	>
-	<div class="flex flex-row space-x-6">
-		{#each ['s', '0', '1', '2'] as motor}
-			<div class="flex flex-col space-y-4 items-center">
-				<span>Motor {motor}:</span>
-				<button
-					on:click={() => move(motor, 5)}
-					type="button"
-					class="m-0 px-4 py-0.5 border-2 border-stone-400">+</button
-				>
-				<span>{positions.get(motor) ?? 0}</span>
-				<button
-					on:click={() => move(motor, -5)}
-					type="button"
-					class="m-0 px-4 py-0.5 border-2 border-stone-400">-</button
-				>
-			</div>
-		{/each}
-	</div>
+	<details>
+		<summary>Move Motors</summary>
+		<div class="flex flex-row space-x-6">
+			{#each ['s', '0', '1', '2'] as motor}
+				<div class="flex flex-col space-y-4 items-center">
+					<span>Motor {motor}:</span>
+					<button
+						on:click={() => move(motor, 5)}
+						type="button"
+						class="m-0 px-4 py-0.5 border-2 border-stone-400">+</button
+					>
+					<span>{positions.get(motor) ?? 0}</span>
+					<button
+						on:click={() => move(motor, -5)}
+						type="button"
+						class="m-0 px-4 py-0.5 border-2 border-stone-400">-</button
+					>
+				</div>
+			{/each}
+		</div>
+	</details>
+
+	<p>Desired Postition: {JSON.stringify(target)}</p>
+	<p>Joint Angles: {JSON.stringify(jointAngles)}</p>
 {:else}
 	<p>Your browser does not support web serial.</p>
 {/if}

@@ -20,6 +20,8 @@
 	let reader: ReadableStreamDefaultReader<string>;
 
 	const connect = async () => {
+		if (!browser) return;
+
 		port = await navigator.serial.requestPort();
 		await port.open({ baudRate: 115200 });
 
@@ -37,6 +39,8 @@
 	async function readLoop() {
 		// Reads data from the input stream and displays it in the console.
 		while (true) {
+			if (!reader) continue;
+
 			const { value, done } = await reader.read();
 			console.log('DEBUG', 'serial in', [value]);
 			lastMessages.unshift(value);
@@ -51,6 +55,8 @@
 	}
 
 	async function reset() {
+		if (!writerStream) return;
+
 		console.log('reset');
 		const writer = writerStream.getWriter();
 		await writer.write('\x03');
@@ -59,6 +65,8 @@
 	}
 
 	const send = async (data: string): Promise<string> => {
+		if (!writerStream) return;
+
 		const sentry = Math.random().toFixed(5).slice(2);
 		const packet = `${data} ${sentry}\r\n`;
 		console.log('DEBUG', 'serial out', [packet]);
@@ -76,6 +84,7 @@
 	};
 
 	let positions = new Map<string, number>();
+	positions.set('s', 0);
 	const move = async (motor: string, step: number) => {
 		const newPos = await send(`${motor}${step > 0 ? '+' : '-'}${Math.abs(step)}`);
 
@@ -139,8 +148,8 @@
 	type Point3D = [number, number, number];
 	type Point2D = [number, number];
 
-	let target: Point3D = [0, 10, 10];
-	let jointAngles = [90, 90];
+	let target: Point3D = [0, 14, 7];
+	let jointAngles = [90, 90, 90];
 	const armLength = 10;
 	$: jointAngles = moveArm(target, jointAngles);
 
@@ -150,24 +159,27 @@
 
 	const STEPS_PER_REV = 200;
 	const extractTargetPos = (target: Point3D): [number, Point2D] => {
-		const radians = Math.atan2(target[1], target[0]);
+		const radians = Math.atan2(target[1], target[0]) - Math.PI / 2;
 		const radius = pythag(target[0], target[1]);
 		return [radians * (STEPS_PER_REV / 2 / Math.PI), [radius, target[2]]];
 	};
 
 	const extractPlaneCoordinates = (jointAngles: number[]): Point2D[] => {
-		return [90].concat(...jointAngles).reduce((acc, angle, i, arr) => {
-			if (i === 0) {
-				acc.push([0, 0]);
-			} else {
-				const absoluteAngle = angle + arr[i - 1] - 90;
-				acc.push([
-					acc[acc.length - 1][0] + Math.cos((absoluteAngle * Math.PI) / 180) * armLength,
-					acc[acc.length - 1][1] + Math.sin((absoluteAngle * Math.PI) / 180) * armLength
-				]);
-			}
-			return acc;
-		}, [] as Point2D[]);
+		return [90]
+			.concat(...jointAngles)
+			.slice(0, -1)
+			.reduce((acc, angle, i, arr) => {
+				if (i === 0) {
+					acc.push([0, 0]);
+				} else {
+					const absoluteAngle = arr.slice(0, i + 1).reduce((acc, angle) => acc + angle - 90, 90);
+					acc.push([
+						acc[acc.length - 1][0] + Math.cos((absoluteAngle * Math.PI) / 180) * armLength,
+						acc[acc.length - 1][1] + Math.sin((absoluteAngle * Math.PI) / 180) * armLength
+					]);
+				}
+				return acc;
+			}, [] as Point2D[]);
 	};
 
 	const fabrik = (target: Point2D, jointCoords: Point2D[]) => {
@@ -206,21 +218,20 @@
 	};
 
 	const computeJointAngles = (jointCoords: Point2D[]): number[] => {
-		return jointCoords
-			.reduce(
-				(acc, joint, i, arr) => {
-					if (i === 0) return acc;
-					const prevPoint = arr[i - 1];
-					const dX = joint[0] - prevPoint[0];
-					const dY = joint[1] - prevPoint[1];
-					const absoluteAngle = (Math.atan2(dY, dX) * 180) / Math.PI;
-					const relativeAngle = absoluteAngle + 90 - acc[acc.length - 1];
-					acc.push(relativeAngle);
-					return acc;
-				},
-				[90]
-			)
-			.slice(1);
+		jointCoords.push([
+			jointCoords[jointCoords.length - 1][0] * 1.1,
+			jointCoords[jointCoords.length - 1][1]
+		]);
+		return jointCoords.reduce((acc, joint, i, arr) => {
+			if (i === 0) return acc;
+			const prevPoint = arr[i - 1];
+			const dX = joint[0] - prevPoint[0];
+			const dY = joint[1] - prevPoint[1];
+			const absoluteAngle = (Math.atan2(dY, dX) * 180) / Math.PI;
+			const relativeAngle = absoluteAngle + 90 - acc.reduce((acc, angle) => acc + angle - 90, 90);
+			acc.push(relativeAngle);
+			return acc;
+		}, []);
 	};
 
 	const moveArm = (target: Point3D, jointAngles: number[]) => {
@@ -241,6 +252,8 @@
 		newJointAngles.forEach((angle, i) => {
 			set(i.toString(), angle);
 		});
+		positions.set('s', targetAngle - positions.get('s'));
+		set('s', positions.get('s'));
 
 		return newJointAngles;
 	};
@@ -281,7 +294,8 @@
 	</details>
 
 	<p>Desired Postition: {JSON.stringify(target)}</p>
-	<p>Joint Angles: {JSON.stringify(jointAngles)}</p>
+	<p>Computed Joint Angles: {JSON.stringify(jointAngles)}</p>
+	<p>Actual Angles: {JSON.stringify([...positions.values()], null, 2)}</p>
 {:else}
 	<p>Your browser does not support web serial.</p>
 {/if}

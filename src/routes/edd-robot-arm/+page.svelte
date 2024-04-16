@@ -102,6 +102,7 @@
 		positions = positions;
 	};
 
+	let timeout: number;
 	const handleKeypress = async (event: KeyboardEvent) => {
 		if (!port) return;
 
@@ -124,6 +125,7 @@
 		// 	move('2', -5);
 		// }
 
+		clearTimeout(timeout);
 		if (key === 'w') {
 			target[1] += 1;
 		} else if (key === 's') {
@@ -137,7 +139,9 @@
 		} else if (key === 'q') {
 			target[2] -= 1;
 		}
-		target = target;
+		timeout = setTimeout(() => {
+			target = target;
+		}, 100);
 	};
 
 	// attempt at inverse kinematics based on FABRIK
@@ -148,20 +152,20 @@
 	type Point3D = [number, number, number];
 	type Point2D = [number, number];
 
-	let target: Point3D = [0, 14, 7];
+	let target: Point3D = [0, 180, 200];
 	let jointAngles = [90, 90, 90];
-	const armLength = 10;
+	const armLength = 163;
 	$: jointAngles = moveArm(target, jointAngles);
 
 	const pythag = (x: number, y: number): number => {
 		return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
 	};
 
-	const STEPS_PER_REV = 200;
+	const STEPS_PER_REV = 5000;
 	const extractTargetPos = (target: Point3D): [number, Point2D] => {
 		const radians = Math.atan2(target[1], target[0]) - Math.PI / 2;
 		const radius = pythag(target[0], target[1]);
-		return [radians * (STEPS_PER_REV / 2 / Math.PI), [radius, target[2]]];
+		return [Math.round(radians * (STEPS_PER_REV / 2 / Math.PI)), [radius, target[2]]];
 	};
 
 	const extractPlaneCoordinates = (jointAngles: number[]): Point2D[] => {
@@ -229,7 +233,7 @@
 			const dY = joint[1] - prevPoint[1];
 			const absoluteAngle = (Math.atan2(dY, dX) * 180) / Math.PI;
 			const relativeAngle = absoluteAngle + 90 - acc.reduce((acc, angle) => acc + angle - 90, 90);
-			acc.push(relativeAngle);
+			acc.push(Math.round(relativeAngle));
 			return acc;
 		}, []);
 	};
@@ -249,11 +253,15 @@
 			newJointAngles
 		});
 
-		newJointAngles.forEach((angle, i) => {
-			set(i.toString(), angle);
-		});
-		positions.set('s', targetAngle - positions.get('s'));
-		set('s', positions.get('s'));
+		(async () => {
+			await move('s', targetAngle - positions.get('s'));
+			for (let i = 0; i < newJointAngles.length; i++) {
+				await set(i.toString(), newJointAngles[i]);
+			}
+
+			positions.set('s', targetAngle);
+			positions = positions;
+		})();
 
 		return newJointAngles;
 	};

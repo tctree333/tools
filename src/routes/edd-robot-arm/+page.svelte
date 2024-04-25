@@ -108,21 +108,25 @@
 
 		const key = event.key;
 		// if (key === 'q') {
-		// 	move('s', 5);
+		// 	move('s', 10);
 		// } else if (key === 'a') {
-		// 	move('s', -5);
+		// 	move('s', -10);
 		// } else if (key === 'w') {
-		// 	move('0', 5);
+		// 	move('0', 1);
 		// } else if (key === 's') {
-		// 	move('0', -5);
+		// 	move('0', -1);
 		// } else if (key === 'e') {
-		// 	move('1', 5);
+		// 	move('1', 1);
 		// } else if (key === 'd') {
-		// 	move('1', -5);
+		// 	move('1', -1);
 		// } else if (key === 'r') {
-		// 	move('2', 5);
+		// 	move('2', 1);
 		// } else if (key === 'f') {
-		// 	move('2', -5);
+		// 	move('2', -1);
+		// } else if (key === 'x') {
+		// 	move('e', 500);
+		// } else if (key === 'f') {
+		// 	move('e', -500);
 		// }
 
 		clearTimeout(timeout);
@@ -138,10 +142,14 @@
 			target[2] += 1;
 		} else if (key === 'q') {
 			target[2] -= 1;
+		} else if (key === 'r') {
+			move('e', 500);
+		} else if (key === 'f') {
+			move('e', -500);
 		}
-		timeout = setTimeout(() => {
-			target = target;
-		}, 100);
+		// timeout = setTimeout(() => {
+		// 	target = target;
+		// }, 100);
 	};
 
 	// attempt at inverse kinematics based on FABRIK
@@ -161,7 +169,7 @@
 		return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
 	};
 
-	const STEPS_PER_REV = 5000;
+	const STEPS_PER_REV = 2800;
 	const extractTargetPos = (target: Point3D): [number, Point2D] => {
 		const radians = Math.atan2(target[1], target[0]) - Math.PI / 2;
 		const radius = pythag(target[0], target[1]);
@@ -282,17 +290,17 @@
 	<details>
 		<summary>Move Motors</summary>
 		<div class="flex flex-row space-x-6">
-			{#each ['s', '0', '1', '2'] as motor}
+			{#each ['e', 's', '0', '1', '2'] as motor}
 				<div class="flex flex-col space-y-4 items-center">
 					<span>Motor {motor}:</span>
 					<button
-						on:click={() => move(motor, 5)}
+						on:click={() => move(motor, motor === 'e' ? 100 : motor === 's' ? 250 : 1)}
 						type="button"
 						class="m-0 px-4 py-0.5 border-2 border-stone-400">+</button
 					>
 					<span>{positions.get(motor) ?? 0}</span>
 					<button
-						on:click={() => move(motor, -5)}
+						on:click={() => move(motor, motor === 'e' ? -100 : motor === 's' ? -250 : -1)}
 						type="button"
 						class="m-0 px-4 py-0.5 border-2 border-stone-400">-</button
 					>

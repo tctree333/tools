@@ -107,46 +107,46 @@
 		if (!port) return;
 
 		const key = event.key;
-		// if (key === 'q') {
-		// 	move('s', 10);
-		// } else if (key === 'a') {
-		// 	move('s', -10);
-		// } else if (key === 'w') {
-		// 	move('0', 1);
+		if (key === 'a') {
+			move('s', 10);
+		} else if (key === 'd') {
+			move('s', -10);
+		} else if (key === 'w') {
+			move('0', 1);
+		} else if (key === 's') {
+			move('0', -1);
+		} else if (key === 'e') {
+			move('1', 1);
+		} else if (key === 'q') {
+			move('1', -1);
+		} else if (key === '3') {
+			move('2', 1);
+		} else if (key === '2') {
+			move('2', -1);
+		} else if (key === 'x') {
+			move('e', 300);
+		} else if (key === 'z') {
+			move('e', -300);
+		}
+
+		// clearTimeout(timeout);
+		// if (key === 'w') {
+		// 	target[1] += 1;
 		// } else if (key === 's') {
-		// 	move('0', -1);
-		// } else if (key === 'e') {
-		// 	move('1', 1);
+		// 	target[1] -= 1;
 		// } else if (key === 'd') {
-		// 	move('1', -1);
+		// 	target[0] += 1;
+		// } else if (key === 'a') {
+		// 	target[0] -= 1;
+		// } else if (key === 'e') {
+		// 	target[2] += 1;
+		// } else if (key === 'q') {
+		// 	target[2] -= 1;
 		// } else if (key === 'r') {
-		// 	move('2', 1);
-		// } else if (key === 'f') {
-		// 	move('2', -1);
-		// } else if (key === 'x') {
 		// 	move('e', 500);
 		// } else if (key === 'f') {
 		// 	move('e', -500);
 		// }
-
-		clearTimeout(timeout);
-		if (key === 'w') {
-			target[1] += 1;
-		} else if (key === 's') {
-			target[1] -= 1;
-		} else if (key === 'd') {
-			target[0] += 1;
-		} else if (key === 'a') {
-			target[0] -= 1;
-		} else if (key === 'e') {
-			target[2] += 1;
-		} else if (key === 'q') {
-			target[2] -= 1;
-		} else if (key === 'r') {
-			move('e', 500);
-		} else if (key === 'f') {
-			move('e', -500);
-		}
 		// timeout = setTimeout(() => {
 		// 	target = target;
 		// }, 100);
@@ -287,7 +287,7 @@
 	>
 	<button on:click={reset} type="button" class="px-4 py-0.5 border-2 border-stone-400">Reset</button
 	>
-	<details>
+	<details open>
 		<summary>Move Motors</summary>
 		<div class="flex flex-row space-x-6">
 			{#each ['e', 's', '0', '1', '2'] as motor}
@@ -309,9 +309,9 @@
 		</div>
 	</details>
 
-	<p>Desired Postition: {JSON.stringify(target)}</p>
+	<!-- <p>Desired Postition: {JSON.stringify(target)}</p>
 	<p>Computed Joint Angles: {JSON.stringify(jointAngles)}</p>
-	<p>Actual Angles: {JSON.stringify([...positions.values()], null, 2)}</p>
+	<p>Actual Angles: {JSON.stringify([...positions.values()], null, 2)}</p> -->
 {:else}
 	<p>Your browser does not support web serial.</p>
 {/if}

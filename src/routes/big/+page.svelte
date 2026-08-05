@@ -42,6 +42,6 @@
 	}
 	input[type='number'] {
 		-moz-appearance: textfield;
-		width: 3em;
+		width: 8em;
 	}
 </style>

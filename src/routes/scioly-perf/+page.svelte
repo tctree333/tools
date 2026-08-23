@@ -1,4 +1,4 @@
-<script context="module" lang="ts">
+<script module lang="ts">
 	export const metadata = {
 		title: 'SciOly Performance Tracker',
 		description: 'Track individual performance using Duosmium data.'
@@ -6,30 +6,36 @@
 </script>
 
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { browser } from '$app/environment';
 	import Head from '$lib/components/Head.svelte';
 	import Interpreter from 'sciolyff/interpreter';
 	import { onMount } from 'svelte';
 
-	let schoolName = '';
-	let tournamentString = '';
-	let interpreters: { i: Interpreter; name: string }[] = [];
+	let schoolName = $state('');
+	let tournamentString = $state('');
+	let interpreters: { i: Interpreter; name: string }[] = $state([]);
 
-	let displayTrials = true;
+	let displayTrials = $state(true);
 
 	let people: {
 		[name: string]: {
 			average: number;
 			placings: { [tournament: string]: { team: string; events: [string, number][] } };
 		};
-	} = {};
+	} = $state({});
 
-	let sort: 'name' | 'avg' = 'name';
+	let sort: 'name' | 'avg' = $state('name');
 
-	$: browser && schoolName && localStorage.setItem('schoolName', schoolName);
-	$: browser && tournamentString && localStorage.setItem('tournamentString', tournamentString);
+	run(() => {
+		browser && schoolName && localStorage.setItem('schoolName', schoolName);
+	});
+	run(() => {
+		browser && tournamentString && localStorage.setItem('tournamentString', tournamentString);
+	});
 
-	let colors: { [name: string]: string } = {};
+	let colors: { [name: string]: string } = $state({});
 
 	async function fetchInterpreters() {
 		const tournaments = tournamentString
@@ -176,19 +182,19 @@
 
 <h1>SciOly Performance Tracker</h1>
 
-<button class="px-4 py-0.5 border-2 border-stone-400 mb-4" on:click={download}
+<button class="px-4 py-0.5 border-2 border-stone-400 mb-4" onclick={download}
 	>Download as JSON</button
 >
 <br />
-<label>Load from JSON: <input type="file" on:change={loadData} accept=".json" /></label>
+<label>Load from JSON: <input type="file" onchange={loadData} accept=".json" /></label>
 
 <h2>Step 1: Participated tournaments</h2>
 <label class="block mb-4">School Name: <input type="text" bind:value={schoolName} /></label>
 <textarea
 	placeholder="2023-02-11_golden_gate_invitational_c ..."
 	bind:value={tournamentString}
-	on:change={loadInterpreters}
-/>
+	onchange={loadInterpreters}
+></textarea>
 
 <h2>Step 2: People and Events</h2>
 {#each interpreters as { i, name }}
@@ -199,7 +205,7 @@
 				id="{name}checkbox"
 				type="checkbox"
 				checked
-				on:change={(e) => {
+				onchange={(e) => {
 					if (!e.target.checked) {
 						Object.values(people).forEach((p) => {
 							delete p.placings[e.target.id.slice(0, -8)];
@@ -212,7 +218,7 @@
 			/>{i.tournament.name || name}
 		</label>
 	</h3>
-	<textarea id={name} placeholder="Name,Team,Event 1,Event 2,..." on:change={updatePeople} />
+	<textarea id={name} placeholder="Name,Team,Event 1,Event 2,..." onchange={updatePeople}></textarea>
 {/each}
 
 <h2>Step 3: Results</h2>
@@ -220,7 +226,7 @@
 	<input
 		type="checkbox"
 		bind:checked={displayTrials}
-		on:change={() => {
+		onchange={() => {
 			interpreters.forEach(({ name }) => {
 				if (!document.getElementById(name + 'checkbox')?.checked) return;
 				const target = document.getElementById(name);
@@ -232,7 +238,7 @@
 </label>
 <button
 	class="px-4 py-0.5 border-2 border-stone-400 mb-4 block"
-	on:click={() => (sort = sort === 'name' ? 'avg' : 'name')}
+	onclick={() => (sort = sort === 'name' ? 'avg' : 'name')}
 	>Sort by {sort === 'name' ? 'average' : 'name'}</button
 >
 <table>

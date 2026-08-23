@@ -1,4 +1,4 @@
-<script context="module" lang="ts">
+<script module lang="ts">
 	export const metadata = {
 		title: 'Cron Timezone Shifter',
 		description: 'Convert crontab syntax from one timezone to another.'
@@ -10,17 +10,20 @@
 
 	import parser from 'cron-parser';
 
-	let cron = '6 */4 * * 1-5';
-	let offset = -7;
-	$: offset = offset && Math.max(Math.min(offset, 14), -14);
-	$: readableOffset =
+	let cron = $state('6 */4 * * 1-5');
+	let offset = $state(-7);
+
+	$effect(() => {
+		offset = offset && Math.max(Math.min(offset, 14), -14);
+	});
+	let readableOffset = $derived(
 		offset === 0
 			? 'Keep Original'
 			: `${offset > 0 ? 'add' : 'subtract'} ${Math.floor(Math.abs(offset))} hours ${Math.round(
 					(Math.abs(offset) - Math.floor(Math.abs(offset))) * 60
-			  )} minutes`;
-
-	$: result = calculateShift(cron, offset);
+				)} minutes`
+	);
+	let result = $derived(calculateShift(cron, offset));
 
 	type EditableField = {
 		-readonly [K in keyof parser.CronFields]: [...parser.CronFields[K]];
@@ -183,12 +186,12 @@
 	<input bind:value={offset} type="number" class="w-20" max="14" min="-14" />
 </label>
 <p class="inline whitespace-nowrap">({readableOffset})</p>
-<p class="!mt-2 text-sm">
+<p class="mt-2! text-sm">
 	Note: If you're converting TO UTC, the shift will be the inverse of your UTC offset.<br />For
 	example, converting from UTC-7 to UTC will be a shift of plus 7.
 </p>
 
-<p class="!-mb-2"><strong>Output:</strong></p>
+<p class="-mb-2!"><strong>Output:</strong></p>
 <ul>
 	{#each result as r}
 		<li><code>{r}</code></li>

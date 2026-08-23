@@ -1,4 +1,4 @@
-<script context="module" lang="ts">
+<script module lang="ts">
 	export const metadata = {
 		title: 'Room LED Control',
 		description: 'Control lights on the local network.'
@@ -6,6 +6,8 @@
 </script>
 
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { browser } from '$app/environment';
 	import { page } from '$app/stores';
 
@@ -14,16 +16,16 @@
 	import { onMount } from 'svelte';
 
 	let ipAddress = $page.url.hash.slice(1) || '0.0.0.0';
-	let color: ColorInfo = {
+	let color: ColorInfo = $state({
 		hue: 0,
 		saturation: 0,
 		brightness: 100,
 		hex: 'FFFFFF'
-	};
-	let setColorFromHex: (hex: string) => void;
+	});
+	let setColorFromHex: (hex: string) => void = $state();
 
-	let colorMode: string;
-	let brightness: number;
+	let colorMode: string = $state();
+	let brightness: number = $state();
 
 	function update(command: string) {
 		if (browser && loaded) {
@@ -60,13 +62,19 @@
 			});
 	});
 
-	$: updateColor(color.hex);
-	$: update(colorMode);
-	$: update(
-		`B${Math.round((brightness / 100) * 255)
-			.toString(16)
-			.padStart(2, '0')}`
-	);
+	run(() => {
+		updateColor(color.hex);
+	});
+	run(() => {
+		update(colorMode);
+	});
+	run(() => {
+		update(
+			`B${Math.round((brightness / 100) * 255)
+				.toString(16)
+				.padStart(2, '0')}`
+		);
+	});
 </script>
 
 <Head title={metadata.title} description={metadata.description} />
@@ -96,14 +104,14 @@
 <br />
 
 <button
-	on:click={() => {
+	onclick={() => {
 		update('on');
 	}}
 	type="button"
 	class="mb-8 px-4 py-0.5 border-2 border-stone-400">On</button
 >
 <button
-	on:click={() => {
+	onclick={() => {
 		update('off');
 	}}
 	type="button"

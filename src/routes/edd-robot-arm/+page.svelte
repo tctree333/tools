@@ -1,4 +1,4 @@
-<script context="module" lang="ts">
+<script module lang="ts">
 	export const metadata = {
 		title: 'Robot Arm',
 		description: 'Control a robotic arm over Web Serial.'
@@ -6,6 +6,8 @@
 </script>
 
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { browser } from '$app/environment';
 
 	import Head from '$lib/components/Head.svelte';
@@ -83,7 +85,7 @@
 		return returned;
 	};
 
-	let positions = new Map<string, number>();
+	let positions = $state(new Map<string, number>());
 	positions.set('s', 0);
 	const move = async (motor: string, step: number) => {
 		const newPos = await send(`${motor}${step > 0 ? '+' : '-'}${Math.abs(step)}`);
@@ -161,9 +163,8 @@
 	type Point2D = [number, number];
 
 	let target: Point3D = [0, 180, 200];
-	let jointAngles = [90, 90, 90];
+	let jointAngles = $state([90, 90, 90]);
 	const armLength = 163;
-	$: jointAngles = moveArm(target, jointAngles);
 
 	const pythag = (x: number, y: number): number => {
 		return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
@@ -273,19 +274,22 @@
 
 		return newJointAngles;
 	};
+	run(() => {
+		jointAngles = moveArm(target, jointAngles);
+	});
 </script>
 
 <Head title={metadata.title} description={metadata.description} />
 
-<svelte:window on:keypress={handleKeypress} />
+<svelte:window onkeypress={handleKeypress} />
 
 <h1>Robot Arm</h1>
 
 {#if serialSupported}
-	<button on:click={connect} type="button" class="px-4 py-0.5 border-2 border-stone-400"
+	<button onclick={connect} type="button" class="px-4 py-0.5 border-2 border-stone-400"
 		>Connect</button
 	>
-	<button on:click={reset} type="button" class="px-4 py-0.5 border-2 border-stone-400">Reset</button
+	<button onclick={reset} type="button" class="px-4 py-0.5 border-2 border-stone-400">Reset</button
 	>
 	<details open>
 		<summary>Move Motors</summary>
@@ -294,13 +298,13 @@
 				<div class="flex flex-col space-y-4 items-center">
 					<span>Motor {motor}:</span>
 					<button
-						on:click={() => move(motor, motor === 'e' ? 100 : motor === 's' ? 250 : 1)}
+						onclick={() => move(motor, motor === 'e' ? 100 : motor === 's' ? 250 : 1)}
 						type="button"
 						class="m-0 px-4 py-0.5 border-2 border-stone-400">+</button
 					>
 					<span>{positions.get(motor) ?? 0}</span>
 					<button
-						on:click={() => move(motor, motor === 'e' ? -100 : motor === 's' ? -250 : -1)}
+						onclick={() => move(motor, motor === 'e' ? -100 : motor === 's' ? -250 : -1)}
 						type="button"
 						class="m-0 px-4 py-0.5 border-2 border-stone-400">-</button
 					>

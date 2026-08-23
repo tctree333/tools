@@ -1,4 +1,4 @@
-<script context="module" lang="ts">
+<script module lang="ts">
 	export const metadata = {
 		title: 'Extract Numbers to Table',
 		description: 'Pull out numbers from text and create a table.'
@@ -8,15 +8,15 @@
 <script lang="ts">
 	import Head from '$lib/components/Head.svelte';
 
-	let input = '1 some text here 2 3 4 5\n20 more text wow 40 5 55 8';
+	let input = $state('1 some text here 2 3 4 5\n20 more text wow 40 5 55 8');
 
-	let table: (string | number)[][];
-
-	$: table = input
-		.split('\n')
-		.map((row) =>
-			[...row.matchAll(/\d+|(?:[^\d\s]\s[^\d\s]|[^\d\s])+/g)].map((res) => res[0].trim())
-		);
+	let table: (string | number)[][] = $derived(
+		input
+			.split('\n')
+			.map((row) =>
+				[...row.matchAll(/\d+|(?:[^\d\s]\s[^\d\s]|[^\d\s])+/g)].map((res) => res[0].trim())
+			)
+	);
 </script>
 
 <Head title={metadata.title} description={metadata.description} />
@@ -33,7 +33,7 @@
 	software.
 </p>
 
-<textarea class="w-full block" bind:value={input} rows="10" />
+<textarea class="w-full block" bind:value={input} rows="10"></textarea>
 {#if table}
 	<table class="not-prose">
 		<tbody>
@@ -51,6 +51,7 @@
 {/if}
 
 <style lang="postcss">
+	@reference "#app.css";
 	tbody tr + tr {
 		border-top-width: 1px;
 		@apply border-stone-300;

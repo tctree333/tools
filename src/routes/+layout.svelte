@@ -1,5 +1,10 @@
-<script>
+<script lang="ts">
 	import '../app.css';
+	interface Props {
+		children?: import('svelte').Snippet;
+	}
+
+	let { children }: Props = $props();
 </script>
 
 <header class="border-b-2 border-blue-100">
@@ -13,7 +18,7 @@
 	<main
 		class="max-w-5xl mx-auto px-8 mt-8 mb-20 prose prose-stone sm:prose-lg md:prose-xl dark:prose-invert"
 	>
-		<slot />
+		{@render children?.()}
 	</main>
 </div>
 <footer

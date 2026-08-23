@@ -2,8 +2,12 @@
 	import Head from '$lib/components/Head.svelte';
 	import type { PageData } from './$types';
 
-	export let data: PageData;
-	$: ({ tools } = data);
+	interface Props {
+		data: PageData;
+	}
+
+	let { data }: Props = $props();
+	let { tools } = $derived(data);
 </script>
 
 <Head

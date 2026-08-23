@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
 	export interface ColorInfo {
 		hue: number;
 		saturation: number;
@@ -8,30 +8,42 @@
 </script>
 
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { browser } from '$app/environment';
-	import ColorPickerContrastLine, { HSBToRGB, parseHex, RGBToHSB } from './ColorPickerContrastLine.svelte';
+	import ColorPickerContrastLine, {
+		HSBToRGB,
+		parseHex,
+		RGBToHSB
+	} from './ColorPickerContrastLine.svelte';
 
-	let className = '';
-	export { className as class };
-
-	export let contrastRatio = 0;
-	export let against = '';
-
-	export let color: ColorInfo = {
-		hue: 0,
-		saturation: 0,
-		brightness: 0,
-		hex: '#000000'
-	};
-
-	let { hue, saturation, brightness, hex } = color;
-	
-	export const setColorFromHex = (hex: string) => {
-		const {red, green, blue} = parseHex(hex);
-		[hue, saturation, brightness] = RGBToHSB(red, green, blue);
+	interface Props {
+		class?: string;
+		contrastRatio?: number;
+		against?: string;
+		color?: ColorInfo;
 	}
 
-	$: {
+	let {
+		class: className = '',
+		contrastRatio = 0,
+		against = '',
+		color = $bindable({
+			hue: 0,
+			saturation: 0,
+			brightness: 0,
+			hex: '#000000'
+		})
+	}: Props = $props();
+
+	let { hue, saturation, brightness, hex } = $state(color);
+
+	export const setColorFromHex = (hex: string) => {
+		const { red, green, blue } = parseHex(hex);
+		[hue, saturation, brightness] = RGBToHSB(red, green, blue);
+	};
+
+	run(() => {
 		color = {
 			hue,
 			saturation,
@@ -39,15 +51,17 @@
 			hex
 		};
 		color = color;
-	}
+	});
 
-	$: hex = HSBToRGB(hue, saturation, brightness)
-		.map((c) => Math.round(c).toString(16).padStart(2, '0'))
-		.join('');
+	run(() => {
+		hex = HSBToRGB(hue, saturation, brightness)
+			.map((c) => Math.round(c).toString(16).padStart(2, '0'))
+			.join('');
+	});
 
-	let hueMouseDown = false;
-	let pickerMouseDown = false;
-	$: {
+	let hueMouseDown = $state(false);
+	let pickerMouseDown = $state(false);
+	run(() => {
 		if (browser) {
 			if (pickerMouseDown || hueMouseDown) {
 				document.body.classList.add('noselect', 'overflow-y-hidden', 'h-full');
@@ -55,31 +69,31 @@
 				document.body.classList.remove('noselect', 'overflow-y-hidden', 'h-full');
 			}
 		}
-	}
+	});
 
-	let hueFocus = false;
-	let pickerFocus = false;
+	let hueFocus = $state(false);
+	let pickerFocus = $state(false);
 
-	let huePicker: HTMLDivElement;
-	let colorPicker: HTMLDivElement;
+	let huePicker: HTMLDivElement = $state();
+	let colorPicker: HTMLDivElement = $state();
 
 	// 16 is the content width of the picker circle
-	$: huePickerWidth = huePicker?.getBoundingClientRect()?.width - 16 ?? 0;
+	let huePickerWidth = $derived(huePicker?.getBoundingClientRect()?.width - 16 ?? 0);
 	// 8 is half of 16, the content width of the picker circle
-	$: huePickerOffset = huePicker?.getBoundingClientRect()?.x + 8 ?? 0;
-	$: huePickerX = (hue / 360) * huePickerWidth;
+	let huePickerOffset = $derived(huePicker?.getBoundingClientRect()?.x + 8 ?? 0);
+	let huePickerX = $derived((hue / 360) * huePickerWidth);
 	function setHueFromMousePos(x: number) {
 		hue = Math.round(
 			(Math.min(Math.max(0, x - huePickerOffset), huePickerWidth) / huePickerWidth) * 360
 		);
 	}
 
-	$: colorPickerWidth = colorPicker?.getBoundingClientRect()?.width - 16 ?? 0;
-	$: colorPickerHeight = colorPicker?.getBoundingClientRect()?.height - 16 ?? 0;
-	$: colorPickerOffsetX = colorPicker?.getBoundingClientRect()?.x + 8 ?? 0;
-	$: colorPickerOffsetY = colorPicker?.getBoundingClientRect()?.y + 8 ?? 0;
-	$: colorPickerX = (saturation / 100) * colorPickerWidth;
-	$: colorPickerY = ((100 - brightness) / 100) * colorPickerHeight;
+	let colorPickerWidth = $derived(colorPicker?.getBoundingClientRect()?.width - 16 ?? 0);
+	let colorPickerHeight = $derived(colorPicker?.getBoundingClientRect()?.height - 16 ?? 0);
+	let colorPickerOffsetX = $derived(colorPicker?.getBoundingClientRect()?.x + 8 ?? 0);
+	let colorPickerOffsetY = $derived(colorPicker?.getBoundingClientRect()?.y + 8 ?? 0);
+	let colorPickerX = $derived((saturation / 100) * colorPickerWidth);
+	let colorPickerY = $derived(((100 - brightness) / 100) * colorPickerHeight);
 	function setColorFromMousePos(x: number, y: number) {
 		saturation = Math.round(
 			(Math.min(Math.max(0, x - colorPickerOffsetX), colorPickerWidth) / colorPickerWidth) * 100
@@ -93,11 +107,13 @@
 </script>
 
 <svelte:window
-	on:pointerup|preventDefault={() => {
+	onpointerup={(e) => {
+		e.preventDefault();
 		hueMouseDown = false;
 		pickerMouseDown = false;
 	}}
-	on:pointermove|preventDefault={(e) => {
+	onpointermove={(e) => {
+		e.preventDefault();
 		if (hueMouseDown) {
 			setHueFromMousePos(e.pageX);
 		}
@@ -105,7 +121,7 @@
 			setColorFromMousePos(e.pageX, e.pageY);
 		}
 	}}
-	on:keydown={(e) => {
+	onkeydown={(e) => {
 		if (
 			(hueFocus || pickerFocus) &&
 			['ArrowRight', 'ArrowLeft', 'ArrowUp', 'ArrowDown'].includes(e.key)
@@ -144,8 +160,11 @@
 		class="w-full aspect-square mb-4 color-picker rounded-lg relative"
 		style="--hue: {hue};"
 		bind:this={colorPicker}
-		on:pointerdown|preventDefault={() => (pickerMouseDown = true)}
-		on:click={(e) => {
+		onpointerdown={(e) => {
+			e.preventDefault();
+			pickerMouseDown = true;
+		}}
+		onclick={(e) => {
 			setColorFromMousePos(e.pageX, e.pageY);
 		}}
 	>
@@ -153,35 +172,39 @@
 			<ColorPickerContrastLine {hue} {contrastRatio} {against} />
 		{/if}
 		<div
-			on:focus={() => (pickerFocus = true)}
-			on:blur={() => (pickerFocus = false)}
+			onfocus={() => (pickerFocus = true)}
+			onblur={() => (pickerFocus = false)}
 			tabindex="0"
-			class="absolute rounded-full w-4 h-4 ring-gray-400 ring-offset-white ring-1 ring-offset-4 transform outline-none focus:ring-blue-500"
+			class="absolute rounded-full w-4 h-4 ring-gray-400 ring-offset-white ring-1 ring-offset-4 transform translate-0 outline-none focus:ring-blue-500"
 			style="--tw-translate-x: {colorPickerX}px; --tw-translate-y: {colorPickerY}px;"
-		/>
+		></div>
 	</div>
 	<div
 		class="w-full h-4 relative hue-picker rounded-full"
 		bind:this={huePicker}
-		on:pointerdown|preventDefault={() => (hueMouseDown = true)}
-		on:click={(e) => {
+		onpointerdown={(e) => {
+			e.preventDefault();
+			hueMouseDown = true;
+		}}
+		onclick={(e) => {
 			setHueFromMousePos(e.pageX);
 		}}
 	>
 		<div
-			on:focus={() => (hueFocus = true)}
-			on:blur={() => (hueFocus = false)}
+			onfocus={() => (hueFocus = true)}
+			onblur={() => (hueFocus = false)}
 			tabindex="0"
-			class="absolute rounded-full w-4 h-4 ring-gray-400 ring-offset-white ring-1 ring-offset-4 transform outline-none focus:ring-blue-500"
+			class="absolute rounded-full w-4 h-4 ring-gray-400 ring-offset-white ring-1 ring-offset-4 transform translate-0 outline-none focus:ring-blue-500"
 			style="--tw-translate-x: {huePickerX}px;"
-		/>
+		></div>
 	</div>
 </div>
 
 <style>
 	div.color-picker {
 		--hue: 0;
-		background: linear-gradient(rgba(0, 0, 0, 0) 0%, rgb(0, 0, 0) 100%) repeat scroll 0% 0%,
+		background:
+			linear-gradient(rgba(0, 0, 0, 0) 0%, rgb(0, 0, 0) 100%) repeat scroll 0% 0%,
 			rgba(0, 0, 0, 0)
 				linear-gradient(to right, rgb(255, 255, 255) 0%, hsl(var(--hue), 100%, 50%) 100%) repeat
 				scroll 0% 0%;

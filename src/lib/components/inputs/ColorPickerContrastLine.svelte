@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
 	export const parseHex = (hex: string) => {
 		const parts = hex.match(/[\da-f]/gi).length;
 		if (!parts) {
@@ -47,7 +47,7 @@
 		second: { red: number; green: number; blue: number }
 	) => {
 		// an implementation of the WCAG color contrast algorithm
-		// RGB values are [0, 255]
+		
 		const modifier = (color: number) => {
 			if (color <= 0.03928) {
 				return color / 12.92;
@@ -75,20 +75,19 @@
 </script>
 
 <script lang="ts">
-	export let hue: number;
-	export let contrastRatio: number;
-	export let against: string;
+	import { run } from 'svelte/legacy';
 
-	let paths: string[] = [];
-
-	$: {
-		let points = findPoints(hue, against, contrastRatio);
-		if (points[1].length !== 0) {
-			paths = [generatePath(points[0]), generatePath(points[1])];
-		} else {
-			paths = [generatePath(points[0])];
-		}
+	interface Props {
+		// RGB values are [0, 255]
+		hue: number;
+		contrastRatio: number;
+		against: string;
 	}
+
+	let { hue, contrastRatio, against }: Props = $props();
+
+	let paths: string[] = $state([]);
+
 
 	const findPoints = (selectedHue: number, against: string, contrastRatio: number) => {
 		const againstColor = parseHex(against);
@@ -200,6 +199,14 @@
 			return acc;
 		}, '');
 	};
+	run(() => {
+		let points = findPoints(hue, against, contrastRatio);
+		if (points[1].length !== 0) {
+			paths = [generatePath(points[0]), generatePath(points[1])];
+		} else {
+			paths = [generatePath(points[0])];
+		}
+	});
 </script>
 
 <svg class="absolute inset-0" viewBox="0 0 100 100">

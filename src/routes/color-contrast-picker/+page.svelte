@@ -1,4 +1,4 @@
-<script context="module" lang="ts">
+<script module lang="ts">
 	export const metadata = {
 		title: 'Color Contrast Picker',
 		description: 'A color picker with contrast boundaries.'
@@ -10,23 +10,23 @@
 	import ColorPicker, { type ColorInfo } from '$lib/components/inputs/ColorPicker.svelte';
 	import { contrastBetween, parseHex } from '$lib/components/inputs/ColorPickerContrastLine.svelte';
 
-	let color1: ColorInfo = {
+	let color1: ColorInfo = $state({
 		hue: 0,
 		saturation: 0,
 		brightness: 100,
 		hex: 'FFFFFF'
-	};
-	let color2: ColorInfo = {
+	});
+	let color2: ColorInfo = $state({
 		hue: 0,
 		saturation: 0,
 		brightness: 0,
 		hex: '000000'
-	};
+	});
 
-	let contrastRatio = 7;
+	let contrastRatio = $state(7);
 
-	$: hex = color1.hex;
-	$: against = color2.hex;
+	let hex = $derived(color1.hex);
+	let against = $derived(color2.hex);
 </script>
 
 <Head title={metadata.title} description={metadata.description} />

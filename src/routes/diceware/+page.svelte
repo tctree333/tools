@@ -1,4 +1,4 @@
-<script context="module" lang="ts">
+<script module lang="ts">
 	export const metadata = {
 		title: 'Diceware Passphrases',
 		description: 'Generate a diceware passphrase.'
@@ -6,6 +6,8 @@
 </script>
 
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import Head from '$lib/components/Head.svelte';
 	import long from '$lib/data/eff-wordlist-long';
 	import short1 from '$lib/data/eff-wordlist-short1';
@@ -29,13 +31,10 @@
 		}
 	};
 
-	let generated = '';
-	let length = 6;
-	let selectedList = 'long';
+	let generated = $state('');
+	let length = $state(6);
+	let selectedList = $state('long');
 
-	$: {
-		generated = generate(length, selectedList);
-	}
 
 	function generate(count: number, list: string) {
 		const config = wordlists[list];
@@ -49,6 +48,9 @@
 		}
 		return phrase.join(' ');
 	}
+	run(() => {
+		generated = generate(length, selectedList);
+	});
 </script>
 
 <Head title={metadata.title} description={metadata.description} />
@@ -70,7 +72,7 @@
 		</select>
 	</label>
 	<button
-		on:click={() => {
+		onclick={() => {
 			generated = generate(length, selectedList);
 		}}
 		type="button"

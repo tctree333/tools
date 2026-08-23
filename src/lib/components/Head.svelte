@@ -3,21 +3,31 @@
 
 	import Favicons from './Favicons.svelte';
 
-	export let title: string;
-	export let description: string;
 
-	export let index = true;
 
 	interface PageImage {
 		url: string;
 		type: string;
 		alt: string;
 	}
-	export let pageImage: PageImage | undefined = undefined;
 
-	export let canonical: string | undefined = undefined;
+	interface Props {
+		title: string;
+		description: string;
+		index?: boolean;
+		pageImage?: PageImage | undefined;
+		canonical?: string | undefined;
+	}
 
-	const url = new URL('https://tools.tomichen.com');
+	let {
+		title,
+		description,
+		index = true,
+		pageImage = $bindable(undefined),
+		canonical = $bindable(undefined)
+	}: Props = $props();
+
+	const url = $state(new URL('https://tools.tomichen.com'));
 	url.pathname = $page.url.pathname;
 
 	if (!canonical) {

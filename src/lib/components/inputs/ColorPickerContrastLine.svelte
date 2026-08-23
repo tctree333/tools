@@ -35,10 +35,10 @@
 			max === min
 				? 0
 				: r === max
-				? ((g - b) / delta) * 60
-				: g === max
-				? 120 + ((b - r) / delta) * 60
-				: 240 + ((r - g) / delta) * 60;
+					? ((g - b) / delta) * 60
+					: g === max
+						? 120 + ((b - r) / delta) * 60
+						: 240 + ((r - g) / delta) * 60;
 		return [hue, saturation, brightness];
 	};
 
@@ -47,7 +47,7 @@
 		second: { red: number; green: number; blue: number }
 	) => {
 		// an implementation of the WCAG color contrast algorithm
-		
+
 		const modifier = (color: number) => {
 			if (color <= 0.03928) {
 				return color / 12.92;
@@ -87,7 +87,6 @@
 	let { hue, contrastRatio, against }: Props = $props();
 
 	let paths: string[] = $state([]);
-
 
 	const findPoints = (selectedHue: number, against: string, contrastRatio: number) => {
 		const againstColor = parseHex(against);

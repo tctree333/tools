@@ -6,8 +6,6 @@
 </script>
 
 <script lang="ts">
-	import { run } from 'svelte/legacy';
-
 	import { browser } from '$app/environment';
 	import Head from '$lib/components/Head.svelte';
 	import Interpreter from 'sciolyff/interpreter';
@@ -28,10 +26,10 @@
 
 	let sort: 'name' | 'avg' = $state('name');
 
-	run(() => {
+	$effect(() => {
 		browser && schoolName && localStorage.setItem('schoolName', schoolName);
 	});
-	run(() => {
+	$effect(() => {
 		browser && tournamentString && localStorage.setItem('tournamentString', tournamentString);
 	});
 
@@ -218,7 +216,8 @@
 			/>{i.tournament.name || name}
 		</label>
 	</h3>
-	<textarea id={name} placeholder="Name,Team,Event 1,Event 2,..." onchange={updatePeople}></textarea>
+	<textarea id={name} placeholder="Name,Team,Event 1,Event 2,..." onchange={updatePeople}
+	></textarea>
 {/each}
 
 <h2>Step 3: Results</h2>

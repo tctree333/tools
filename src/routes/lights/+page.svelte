@@ -6,26 +6,24 @@
 </script>
 
 <script lang="ts">
-	import { run } from 'svelte/legacy';
-
 	import { browser } from '$app/environment';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 
 	import Head from '$lib/components/Head.svelte';
 	import ColorPicker, { type ColorInfo } from '$lib/components/inputs/ColorPicker.svelte';
 	import { onMount } from 'svelte';
 
-	let ipAddress = $page.url.hash.slice(1) || '0.0.0.0';
+	let ipAddress = page.url.hash.slice(1) || '0.0.0.0';
 	let color: ColorInfo = $state({
 		hue: 0,
 		saturation: 0,
 		brightness: 100,
 		hex: 'FFFFFF'
 	});
-	let setColorFromHex: (hex: string) => void = $state();
+	let picker: ColorPicker;
 
-	let colorMode: string = $state();
-	let brightness: number = $state();
+	let colorMode: string = $state('rainbow');
+	let brightness: number = $state(80);
 
 	function update(command: string) {
 		if (browser && loaded) {
@@ -35,7 +33,7 @@
 		}
 	}
 
-	let timeout: NodeJS.Timeout;
+	let timeout: number;
 	function updateColor(hex: string) {
 		if (timeout) {
 			clearTimeout(timeout);
@@ -57,18 +55,18 @@
 			.then((data) => {
 				colorMode = data.mode;
 				brightness = Math.round(100 * (data.brightness / 255));
-				setColorFromHex(data.color.toString(16).padStart(6, '0'));
+				picker.setColorFromHex(data.color.toString(16).padStart(6, '0'));
 				loaded = true;
 			});
 	});
 
-	run(() => {
+	$effect(() => {
 		updateColor(color.hex);
 	});
-	run(() => {
+	$effect(() => {
 		update(colorMode);
 	});
-	run(() => {
+	$effect(() => {
 		update(
 			`B${Math.round((brightness / 100) * 255)
 				.toString(16)
@@ -97,7 +95,9 @@
 	Color Mode:
 	<select class="border-2 border-stone-400" bind:value={colorMode}
 		><option value="rainbow" selected>Rainbow</option><option value="pureRandom">Pure Random</option
-		><option value="randomAround">Random Around</option><option value="breathe">Breathe Color</option><option value="manual">Solid Color</option>
+		><option value="randomAround">Random Around</option><option value="breathe"
+			>Breathe Color</option
+		><option value="manual">Solid Color</option>
 	</select>
 </label>
 
@@ -119,7 +119,7 @@
 >
 
 <div class="not-prose flex">
-	<ColorPicker class="w-96 mb-8" bind:color bind:setColorFromHex />
+	<ColorPicker class="w-96 mb-8" bind:color bind:this={picker} />
 </div>
 
 <label>

@@ -6,14 +6,15 @@
 </script>
 
 <script lang="ts">
-	import { run } from 'svelte/legacy';
-
 	import Head from '$lib/components/Head.svelte';
 	import long from '$lib/data/eff-wordlist-long';
 	import short1 from '$lib/data/eff-wordlist-short1';
 	import short2 from '$lib/data/eff-wordlist-short2';
 
-	const wordlists = {
+	const wordlists: Record<
+		string,
+		{ list: Record<number, string>; numbers: number; words: number }
+	> = {
 		long: {
 			list: long,
 			numbers: 5,
@@ -31,10 +32,9 @@
 		}
 	};
 
-	let generated = $state('');
 	let length = $state(6);
 	let selectedList = $state('long');
-
+	let generated = $derived(generate(length, selectedList));
 
 	function generate(count: number, list: string) {
 		const config = wordlists[list];
@@ -43,14 +43,11 @@
 		const array = new Uint8Array(config.numbers);
 		for (let i = 0; i < count; i++) {
 			crypto.getRandomValues(array);
-			const key = array.map((x) => Math.floor((x / 255) * 6) + 1).join('');
+			const key = parseInt(array.map((x) => Math.floor((x / 256) * 6) + 1).join(''));
 			phrase.push(config.list[key]);
 		}
 		return phrase.join(' ');
 	}
-	run(() => {
-		generated = generate(length, selectedList);
-	});
 </script>
 
 <Head title={metadata.title} description={metadata.description} />

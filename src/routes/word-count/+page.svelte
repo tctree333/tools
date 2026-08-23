@@ -6,18 +6,17 @@
 </script>
 
 <script lang="ts">
-	import { run } from 'svelte/legacy';
-
 	import Head from '$lib/components/Head.svelte';
 
 	let value = $state('');
 	let boundaries = $state('\\s');
 
-	let boundaryRegex: RegExp = $state();
-	run(() => {
+	let boundaryRegex: RegExp = $derived.by(() => {
 		try {
-			boundaryRegex = new RegExp(`[${boundaries}]+`);
-		} catch (e) {}
+			return new RegExp(`[${boundaries}]+`);
+		} catch (e) {
+			return new RegExp('\\s+');
+		}
 	});
 	let words = $derived(value ? value.split(boundaryRegex).filter((w) => w !== '').length : 0);
 	let characters = $derived(value ? value.length : 0);

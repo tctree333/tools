@@ -6,8 +6,6 @@
 </script>
 
 <script lang="ts">
-	import { run } from 'svelte/legacy';
-
 	import { browser } from '$app/environment';
 
 	import Head from '$lib/components/Head.svelte';
@@ -274,7 +272,7 @@
 
 		return newJointAngles;
 	};
-	run(() => {
+	$effect(() => {
 		jointAngles = moveArm(target, jointAngles);
 	});
 </script>
@@ -289,8 +287,7 @@
 	<button onclick={connect} type="button" class="px-4 py-0.5 border-2 border-stone-400"
 		>Connect</button
 	>
-	<button onclick={reset} type="button" class="px-4 py-0.5 border-2 border-stone-400">Reset</button
-	>
+	<button onclick={reset} type="button" class="px-4 py-0.5 border-2 border-stone-400">Reset</button>
 	<details open>
 		<summary>Move Motors</summary>
 		<div class="flex flex-row space-x-6">

@@ -26,8 +26,8 @@
 
 	let {
 		class: className = '',
-		contrastRatio = 0,
-		against = '',
+		contrastRatio = $bindable(0),
+		against = $bindable(''),
 		color = $bindable({
 			hue: 0,
 			saturation: 0,
@@ -74,13 +74,13 @@
 	let hueFocus = $state(false);
 	let pickerFocus = $state(false);
 
-	let huePicker: HTMLDivElement = $state();
-	let colorPicker: HTMLDivElement = $state();
+	let huePicker: HTMLDivElement | undefined = $state();
+	let colorPicker: HTMLDivElement | undefined = $state();
 
 	// 16 is the content width of the picker circle
-	let huePickerWidth = $derived(huePicker?.getBoundingClientRect()?.width - 16 ?? 0);
+	let huePickerWidth = $derived(huePicker?.getBoundingClientRect().width ?? 0 - 16);
 	// 8 is half of 16, the content width of the picker circle
-	let huePickerOffset = $derived(huePicker?.getBoundingClientRect()?.x + 8 ?? 0);
+	let huePickerOffset = $derived(huePicker?.getBoundingClientRect().x ?? 0 + 8);
 	let huePickerX = $derived((hue / 360) * huePickerWidth);
 	function setHueFromMousePos(x: number) {
 		hue = Math.round(
@@ -88,10 +88,10 @@
 		);
 	}
 
-	let colorPickerWidth = $derived(colorPicker?.getBoundingClientRect()?.width - 16 ?? 0);
-	let colorPickerHeight = $derived(colorPicker?.getBoundingClientRect()?.height - 16 ?? 0);
-	let colorPickerOffsetX = $derived(colorPicker?.getBoundingClientRect()?.x + 8 ?? 0);
-	let colorPickerOffsetY = $derived(colorPicker?.getBoundingClientRect()?.y + 8 ?? 0);
+	let colorPickerWidth = $derived(colorPicker?.getBoundingClientRect().width ?? 0 - 16);
+	let colorPickerHeight = $derived(colorPicker?.getBoundingClientRect().height ?? 0 - 16);
+	let colorPickerOffsetX = $derived(colorPicker?.getBoundingClientRect().x ?? 0 + 8);
+	let colorPickerOffsetY = $derived(colorPicker?.getBoundingClientRect().y ?? 0 + 8);
 	let colorPickerX = $derived((saturation / 100) * colorPickerWidth);
 	let colorPickerY = $derived(((100 - brightness) / 100) * colorPickerHeight);
 	function setColorFromMousePos(x: number, y: number) {
@@ -156,6 +156,7 @@
 />
 
 <div class={className}>
+	<!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
 	<div
 		class="w-full aspect-square mb-4 color-picker rounded-lg relative"
 		style="--hue: {hue};"
@@ -171,6 +172,7 @@
 		{#if contrastRatio > 0}
 			<ColorPickerContrastLine {hue} {contrastRatio} {against} />
 		{/if}
+		<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 		<div
 			onfocus={() => (pickerFocus = true)}
 			onblur={() => (pickerFocus = false)}
@@ -179,6 +181,7 @@
 			style="--tw-translate-x: {colorPickerX}px; --tw-translate-y: {colorPickerY}px;"
 		></div>
 	</div>
+	<!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
 	<div
 		class="w-full h-4 relative hue-picker rounded-full"
 		bind:this={huePicker}
@@ -190,6 +193,7 @@
 			setHueFromMousePos(e.pageX);
 		}}
 	>
+		<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 		<div
 			onfocus={() => (hueFocus = true)}
 			onblur={() => (hueFocus = false)}

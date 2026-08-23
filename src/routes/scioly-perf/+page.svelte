@@ -27,10 +27,14 @@
 	let sort: 'name' | 'avg' = $state('name');
 
 	$effect(() => {
-		browser && schoolName && localStorage.setItem('schoolName', schoolName);
+		if (browser && schoolName) {
+			localStorage.setItem('schoolName', schoolName);
+		}
 	});
 	$effect(() => {
-		browser && tournamentString && localStorage.setItem('tournamentString', tournamentString);
+		if (browser && tournamentString) {
+			localStorage.setItem('tournamentString', tournamentString);
+		}
 	});
 
 	let colors: { [name: string]: string } = $state({});
@@ -60,13 +64,13 @@
 			if (text) {
 				const target = document.getElementById(name) as HTMLTextAreaElement;
 				target.value = text;
-				updatePeople({ target } as unknown as Event);
+				updatePeople({ currentTarget: target });
 			}
 		});
 	}
 
-	function updatePeople(event: Event) {
-		const target = event.target as HTMLTextAreaElement;
+	function updatePeople(event: { currentTarget: HTMLTextAreaElement }) {
+		const target = event.currentTarget;
 		const tournament = interpreters.find((i) => i.name === target.id);
 		if (!tournament) return;
 
@@ -148,7 +152,7 @@
 				data.data.forEach(({ name, value }: { name: string; value: string }) => {
 					const target = document.getElementById(name) as HTMLTextAreaElement;
 					target.value = value;
-					updatePeople({ target } as unknown as Event);
+					updatePeople({ currentTarget: target });
 				});
 			});
 		};
@@ -195,7 +199,7 @@
 ></textarea>
 
 <h2>Step 2: People and Events</h2>
-{#each interpreters as { i, name }}
+{#each interpreters as { i, name } (name)}
 	<h3>
 		<label>
 			<input
@@ -204,13 +208,17 @@
 				type="checkbox"
 				checked
 				onchange={(e) => {
-					if (!e.target.checked) {
+					if (!e.currentTarget.checked) {
 						Object.values(people).forEach((p) => {
-							delete p.placings[e.target.id.slice(0, -8)];
+							delete p.placings[e.currentTarget.id.slice(0, -8)];
 						});
 						calcPeople();
 					} else {
-						updatePeople({ target: document.getElementById(e.target.id.slice(0, -8)) });
+						updatePeople({
+							currentTarget: document.getElementById(
+								e.currentTarget.id.slice(0, -8)
+							) as HTMLTextAreaElement
+						});
 					}
 				}}
 			/>{i.tournament.name || name}
@@ -229,7 +237,7 @@
 			interpreters.forEach(({ name }) => {
 				if (!document.getElementById(name + 'checkbox')?.checked) return;
 				const target = document.getElementById(name);
-				updatePeople({ target });
+				updatePeople({ currentTarget: target as HTMLTextAreaElement });
 			});
 		}}
 	/>

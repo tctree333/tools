@@ -57,7 +57,7 @@
 		function handleMinutes(): void {
 			const newFields: EditableField[] = [];
 
-			let carryMinute: -1 | 1;
+			let carryMinute: -1 | 1 | undefined = undefined;
 			originalFields.minute.forEach((minute) => {
 				const shifted = minute + shiftMinutes;
 				const carry = shifted < 0 ? -1 : shifted >= 60 ? 1 : 0;
@@ -94,7 +94,7 @@
 
 			const newFields: EditableField[] = [];
 
-			let carryHour: -1 | 1;
+			let carryHour: -1 | 1 | undefined = undefined;
 			originalFields.hour.forEach((hour) => {
 				const shifted = hour + shiftHours + (carryMinute ?? 0);
 				const carry = shifted < 0 ? -1 : shifted >= 24 ? 1 : 0;

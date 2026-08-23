@@ -1,14 +1,15 @@
 <script lang="ts" module>
 	export const parseHex = (hex: string) => {
-		const parts = hex.match(/[\da-f]/gi).length;
+		const parts = hex.match(/[\da-f]/gi)?.length;
 		if (!parts) {
-			return;
+			return { red: 0, green: 0, blue: 0 };
 		}
 
+		let [r, g, b] = [0, 0, 0];
 		if (parts === 6) {
-			var [r, g, b] = hex.match(/[\da-f]{2}/gi)?.map((c) => parseInt(c, 16)) ?? [];
+			[r, g, b] = hex.match(/[\da-f]{2}/gi)?.map((c) => parseInt(c, 16)) ?? [0, 0, 0];
 		} else if (parts === 3) {
-			var [r, g, b] = hex.match(/[\da-f]/gi)?.map((c) => parseInt(c, 16)) ?? [];
+			[r, g, b] = hex.match(/[\da-f]/gi)?.map((c) => parseInt(c, 16)) ?? [0, 0, 0];
 		}
 		return { red: r, green: g, blue: b };
 	};
@@ -97,10 +98,12 @@
 		// the step/range numbers were determined through trial/error ish,
 		// but the y value ranges need to be sufficently large to have the line touch the edges
 		for (let x = -2; x <= 102; x += 13) {
-			let prev: {
-				y: number;
-				pass: boolean;
-			};
+			let prev:
+				| {
+						y: number;
+						pass: boolean;
+				  }
+				| undefined = undefined;
 			let found: [number, number][] = [];
 			for (let y = -5; y <= 115; y += 0.08) {
 				const color = HSBToRGB(selectedHue, x, y);

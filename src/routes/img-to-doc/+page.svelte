@@ -205,7 +205,7 @@
 	{#if imageUri}
 		<div class="flex flex-row flex-wrap gap-8 not-prose">
 			<svg
-				class="flex-1 basis-[420px] max-h-[720px]"
+				class="flex-1 basis-105 max-h-180"
 				viewBox="0 0 {image.width} {image.height}"
 				use:dragCorners
 			>
@@ -249,7 +249,7 @@
 					stroke="black"
 				/>
 			</svg>
-			<div class="flex-1 w-full basis-[420px] max-h-[720px] flex items-center justify-center">
+			<div class="flex-1 w-full basis-105 max-h-180 flex items-center justify-center">
 				<img
 					src={converted?.uri ?? UNICORN}
 					alt="output"
@@ -349,7 +349,7 @@
 	{#if savedImgs.length > 0}
 		<div class="flex flex-row gap-6 overflow-x-scroll">
 			{#each savedImgs as { uri }}
-				<img src={uri} alt="output" class="h-[420px]" />
+				<img src={uri} alt="output" class="h-105" />
 			{/each}
 		</div>
 		<div class="flex flex-row items-center justify-center w-full gap-4 mt-8">

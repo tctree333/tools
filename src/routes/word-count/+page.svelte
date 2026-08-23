@@ -14,7 +14,7 @@
 	let boundaryRegex: RegExp = $derived.by(() => {
 		try {
 			return new RegExp(`[${boundaries}]+`);
-		} catch (e) {
+		} catch {
 			return new RegExp('\\s+');
 		}
 	});

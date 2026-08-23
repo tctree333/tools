@@ -15,10 +15,7 @@
 
 <h1>Big Text Box</h1>
 
-<textarea
-	class="w-full block mb-4 text-xl"
-	rows="8"
-	style="font-size: {size}px; line-height: 1.1;"
+<textarea class="w-full block mb-4 text-xl" rows="8" style="font-size: {size}px; line-height: 1.1;"
 ></textarea>
 
 <div class="flex flex-row items-center space-x-2">
@@ -42,6 +39,7 @@
 	}
 	input[type='number'] {
 		-moz-appearance: textfield;
+		appearance: textfield;
 		width: 8em;
 	}
 </style>
